@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 3: Năng Lượng Hoạt Hóa Của Phản Ứng Hóa Học | Chuyên Đề Hóa 10</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- KaTeX for Scientific Formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        cyber: {
+                            bg: '#050814',
+                            card: 'rgba(15, 23, 42, 0.72)',
+                            cyan: '#06b6d4',
+                            violet: '#8b5cf6',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar & Glassmorphism Styles */
+        body {
+            background-color: #050814;
+            color: #f1f5f9;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.55);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(6, 182, 212, 0.45);
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.15);
+        }
+        .neon-text-cyan {
+            text-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
+        }
+        .neon-border-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.35), inset 0 0 8px rgba(6, 182, 212, 0.15);
+        }
+        /* Slide Transition Animation */
+        .slide-section {
+            display: none;
+            animation: slideFadeIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .slide-section.active {
+            display: block;
+        }
+        @keyframes slideFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.99);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        /* Custom Range Input */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: rgba(51, 65, 85, 0.8);
+            height: 6px;
+            border-radius: 999px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #06b6d4;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+            transition: transform 0.15s ease;
+        }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        /* Laser Pointer Cursor Overlay */
+        #laser-dot {
+            pointer-events: none;
+            position: fixed;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff 15%, #f43f5e 55%, rgba(244,63,94,0) 100%);
+            box-shadow: 0 0 18px 6px rgba(244, 63, 94, 0.85);
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            display: none;
+        }
+        /* Custom Scrollbar inside Slide Container */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-cyan-500 selection:text-slate-950">
+
+    <!-- BACKGROUND AMBIENT PARTICLES CANVAS -->
+    <canvas id="bg-particles" class="fixed inset-0 pointer-events-none z-0 opacity-45"></canvas>
+
+    <!-- ANNOTATION DRAWING CANVAS OVERLAY (Feature #6) -->
+    <canvas id="annotation-canvas" class="fixed inset-0 pointer-events-none z-40"></canvas>
+    <div id="laser-dot"></div>
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="glass-panel sticky top-0 z-30 px-4 lg:px-8 py-2.5 flex items-center justify-between border-b border-slate-800/80">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleTOC()" class="p-2 rounded-lg bg-slate-800/90 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 transition flex items-center gap-2 text-sm font-semibold" title="Mục lục Slide (Phím M)">
+                <i class="fa-solid fa-bars-staggered"></i>
+                <span class="hidden sm:inline">Mục lục</span>
+            </button>
+            <div class="h-5 w-[1px] bg-slate-700 hidden sm:block"></div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider bg-cyan-500/20 text-cyan-300 rounded border border-cyan-500/30">Chuyên đề Hóa 10</span>
+                    <span class="text-xs text-slate-400 hidden md:inline">SGK Kết nối tri thức (Trang 19 – 23)</span>
+                </div>
+                <h1 class="text-sm sm:text-base font-bold text-white tracking-tight truncate max-w-[230px] sm:max-w-md md:max-w-xl">
+                    Bài 3: Năng Lượng Hoạt Hóa Của Phản Ứng Hóa Học
+                </h1>
+            </div>
+        </div>
+
+        <!-- Presentation Interactive Tools Bar -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <!-- Laser Pointer Button -->
+            <button id="btn-laser" onclick="toggleLaser()" class="p-2 rounded-lg bg-slate-800/80 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 border border-slate-700 transition text-xs sm:text-sm flex items-center gap-1.5" title="Bút Laser thuyết trình (Phím L)">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span class="hidden lg:inline">Laser</span>
+            </button>
+
+            <!-- Draw Annotation Button -->
+            <button id="btn-draw" onclick="toggleDrawMode()" class="p-2 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 border border-slate-700 transition text-xs sm:text-sm flex items-center gap-1.5" title="Bút vẽ lên màn hình (Phím D)">
+                <i class="fa-solid fa-pen-nib"></i>
+                <span class="hidden lg:inline">Bút vẽ</span>
+            </button>
+
+            <!-- Clear Drawing Button (Hidden unless draw mode active) -->
+            <button id="btn-clear-draw" onclick="clearAnnotations()" class="hidden p-2 rounded-lg bg-rose-950/80 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 transition text-xs" title="Xóa nét vẽ">
+                <i class="fa-solid fa-eraser"></i>
+            </button>
+
+            <!-- Speaker Notes Button -->
+            <button onclick="toggleSpeakerNotes()" class="p-2 rounded-lg bg-slate-800/80 hover:bg-violet-500/20 text-slate-300 hover:text-violet-300 border border-slate-700 transition text-xs sm:text-sm flex items-center gap-1.5" title="Kịch bản thuyết trình (Phím S)">
+                <i class="fa-solid fa-microphone-lines"></i>
+                <span class="hidden lg:inline">Ghi chú GV</span>
+            </button>
+
+            <!-- Shortcuts Help Modal -->
+            <button onclick="toggleShortcutsModal()" class="p-2 rounded-lg bg-slate-800/80 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700 transition text-xs sm:text-sm" title="Phím tắt (Phím ?)">
+                <i class="fa-regular fa-keyboard"></i>
+            </button>
+
+            <!-- Fullscreen Button -->
+            <button onclick="toggleFullScreen()" class="p-2 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 transition text-xs sm:text-sm" title="Toàn màn hình (Phím F)">
+                <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- TOP PROGRESS BAR -->
+    <div class="w-full h-1 bg-slate-900 z-30">
+        <div id="slide-progress-bar" class="h-full bg-gradient-to-r from-cyan-400 via-violet-500 to-emerald-400 transition-all duration-300" style="width: 10%;"></div>
+    </div>
+
+    <!-- MAIN SLIDE CONTAINER -->
+    <main class="flex-1 relative z-10 container mx-auto px-4 sm:px-6 lg:px-10 py-5 flex items-center justify-center overflow-y-auto">
+
+        <!-- ==========================================
+             SLIDE 1: BÌA & KHỞI ĐỘNG (TRANG 19)
+             ========================================== -->
+        <section id="slide-1" class="slide-section active w-full max-w-6xl">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <!-- Left Column: Intro & Theory Hook -->
+                <div class="lg:col-span-7 space-y-5">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-semibold">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span>CHUYÊN ĐỀ 1: CƠ SỞ HÓA HỌC • TRANG 19 SGK</span>
+                    </div>
+
+                    <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight text-white">
+                        Năng Lượng Hoạt Hóa <br>
+                        <span class="bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-400 bg-clip-text text-transparent">
+                            Của Phản Ứng Hóa Học
+                        </span>
+                    </h2>
+
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                        Khám phá bản chất vì sao có những phản ứng xảy ra tức thời trong tích tắc, nhưng lại có những phản ứng nằm im hàng triệu năm nếu không vượt qua <strong>"hàng rào năng lượng"</strong>.
+                    </p>
+
+                    <!-- Opening Question Box from Page 19 -->
+                    <div class="glass-card p-5 rounded-2xl border-l-4 border-l-amber-400 space-y-2">
+                        <div class="flex items-center gap-2 text-amber-400 font-bold text-sm uppercase tracking-wider">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>Tình huống khởi động (SGK Trang 19)</span>
+                        </div>
+                        <p class="text-slate-200 text-sm leading-relaxed">
+                            Khí <strong>Hydrogen ($\text{H}_2$)</strong> và <strong>Oxygen ($\text{O}_2$)</strong> trộn lẫn không phản ứng với nhau ở nhiệt độ phòng dù để cùng nhau trong thời gian rất dài. Tuy nhiên, chỉ cần đưa một ít <strong>bột Platinum ($\text{Pt}$)</strong> vào hỗn hợp, phản ứng xảy ra ngay tức khắc và tạo thành nước ($\text{H}_2\text{O}$). <span class="text-cyan-300 font-medium">Yếu tố nào đã quyết định sự thay đổi tốc độ đột ngột đó?</span>
+                        </p>
+                    </div>
+
+                    <!-- Core Objectives -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <div class="glass-card p-3.5 rounded-xl flex items-start gap-3">
+                            <div class="p-2 rounded-lg bg-cyan-500/20 text-cyan-400"><i class="fa-solid fa-bolt"></i></div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white uppercase">Khái niệm $E_a$</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Va chạm hiệu quả & giản đồ năng lượng (Tr.19)</p>
+                            </div>
+                        </div>
+                        <div class="glass-card p-3.5 rounded-xl flex items-start gap-3">
+                            <div class="p-2 rounded-lg bg-violet-500/20 text-violet-400"><i class="fa-solid fa-square-root-variable"></i></div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white uppercase">Hàm Arrhenius</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Định lượng $k, T, E_a$ & giải bài tập (Tr.20)</p>
+                            </div>
+                        </div>
+                        <div class="glass-card p-3.5 rounded-xl flex items-start gap-3">
+                            <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400"><i class="fa-solid fa-flask-vial"></i></div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white uppercase">Chất xúc tác</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Cơ chế hạ $E_a$, tầng Ozone & Enzyme (Tr.21–23)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Interactive H2 + O2 + Pt Experiment Simulator -->
+                <div class="lg:col-span-5">
+                    <div class="glass-panel p-5 rounded-2xl border border-cyan-500/30 relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-vial-circle-check"></i> Phòng thí nghiệm ảo: $\text{2H}_2 + \text{O}_2 \xrightarrow{\text{Pt}} \text{2H}_2\text{O}$
+                            </span>
+                            <span id="pt-exp-status" class="px-2 py-0.5 text-[11px] rounded bg-slate-800 text-slate-300 border border-slate-700">
+                                25°C • Chưa phản ứng
+                            </span>
+                        </div>
+
+                        <!-- Reaction Vessel Canvas -->
+                        <div class="relative w-full h-64 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+                            <canvas id="h2o2-canvas" class="w-full h-full block"></canvas>
+                            <div id="explosion-flash" class="absolute inset-0 bg-amber-400 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+                        </div>
+
+                        <!-- Legend & Controls -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 mt-3 text-xs text-slate-300">
+                            <div class="flex items-center gap-3">
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400 inline-block"></span> $\text{H}_2$</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span> $\text{O}_2$</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> $\text{H}_2\text{O}$</span>
+                                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-300 inline-block"></span> Bột $\text{Pt}$</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2.5 mt-4">
+                            <button onclick="triggerPtCatalyst()" id="btn-add-pt" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/25 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-wand-sparkles"></i> Thả bột xúc tác Pt
+                            </button>
+                            <button onclick="resetPtExperiment()" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs sm:text-sm border border-slate-700 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-rotate-right"></i> Làm lại thí nghiệm
+                            </button>
+                        </div>
+
+                        <p id="pt-exp-explain" class="mt-3 text-xs text-slate-400 bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+                            💡 <strong>Quan sát:</strong> Ở 25°C, các phân tử $\text{H}_2$ và $\text{O}_2$ chuyển động va chạm nhưng <strong>không đủ năng lượng hoạt hóa ($E_a$)</strong> để phá vỡ liên kết bền vững. Hãy bấm <em>"Thả bột xúc tác Pt"</em>!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 2: THUYẾT VA CHẠM & VA CHẠM HIỆU QUẢ (TRANG 19)
+             ========================================== -->
+        <section id="slide-2" class="slide-section w-full max-w-6xl">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Mục I • Trang 19 SGK</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">1. Thuyết Va Chạm & Va Chạm Hiệu Quả</h2>
+                </div>
+                <div class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300">
+                    Phương trình mô phỏng: $\text{A}_2 + \text{B}_2 \longrightarrow 2\text{AB}$
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Theory Breakdown -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="glass-card p-4 rounded-2xl border-l-4 border-l-cyan-400">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-atom text-cyan-400"></i> Điều kiện để xảy ra phản ứng hóa học
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+                            Để phản ứng hóa học xảy ra, các phân tử chất phản ứng <strong>bắt buộc phải va chạm với nhau</strong>. Tuy nhiên, thực tế chỉ một phần rất nhỏ các va chạm dẫn tới phản ứng.
+                        </p>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-2xl space-y-3">
+                        <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-check-double"></i> 2 Điều kiện của "Va chạm hiệu quả"
+                        </h4>
+
+                        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                            <div class="text-xs font-bold text-cyan-300">1. Năng lượng đủ lớn ($\ge E_a$)</div>
+                            <p class="text-xs text-slate-300">
+                                Các hạt va chạm phải có động năng đủ lớn để thắng lực đẩy electron và <strong>phá vỡ hoặc làm suy yếu các liên kết cũ</strong> trong phân tử chất đầu.
+                            </p>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 space-y-1">
+                            <div class="text-xs font-bold text-violet-300">2. Định hướng không gian thích hợp (Đúng hướng)</div>
+                            <p class="text-xs text-slate-300">
+                                Các nguyên tử trực tiếp tạo liên kết mới phải tiếp xúc đúng góc độ khi va chạm (ví dụ hai phân tử $\text{A-A}$ và $\text{B-B}$ phải tiếp xúc song song đối diện).
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-2xl bg-gradient-to-br from-cyan-950/40 to-slate-900/80 border border-cyan-500/30">
+                        <h4 class="text-xs font-bold uppercase text-cyan-300">Định nghĩa Năng lượng hoạt hóa ($E_a$ - Trang 19):</h4>
+                        <p class="text-xs sm:text-sm text-white font-medium mt-1 leading-relaxed">
+                            "<strong>Năng lượng hoạt hóa ($E_a$)</strong> là năng lượng tối thiểu mà các phân tử chất phản ứng cần phải có để va chạm giữa chúng dẫn đến phản ứng hóa học."
+                        </p>
+                        <div class="mt-2 text-xs text-amber-300 font-mono">
+                            • Đơn vị: kJ/mol hoặc J/mol (1 kJ/mol = 1000 J/mol)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Interactive 2D Collision Simulator (Feature #2) -->
+                <div class="lg:col-span-7">
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-700/80 h-full flex flex-col justify-between">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">
+                                <i class="fa-solid fa-sliders"></i> Mô phỏng va chạm phân tử 2D
+                            </span>
+                            <div id="collision-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                Sẵn sàng bắn phân tử
+                            </div>
+                        </div>
+
+                        <!-- 2D Collision Canvas -->
+                        <div class="relative w-full h-56 sm:h-64 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+                            <canvas id="collision-sim-canvas" class="w-full h-full block"></canvas>
+                        </div>
+
+                        <!-- Sliders for Kinetic Energy & Orientation -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 bg-slate-900/75 p-3.5 rounded-xl border border-slate-800">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <span class="text-slate-300 font-semibold">Động năng va chạm ($E$):</span>
+                                    <span id="col-energy-val" class="font-mono font-bold text-cyan-400">85 kJ/mol</span>
+                                </div>
+                                <input type="range" id="col-energy-slider" min="20" max="120" value="85" class="w-full" oninput="updateCollisionParams()">
+                                <div class="flex justify-between text-[10px] text-slate-500 mt-1">
+                                    <span>Yếu (20)</span>
+                                    <span class="text-amber-400 font-semibold">Ngưỡng $E_a = 70\text{ kJ/mol}$</span>
+                                    <span>Mạnh (120)</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5">
+                                    <span class="text-slate-300 font-semibold">Hướng va chạm (Định hướng):</span>
+                                    <span id="col-orient-val" class="font-bold text-emerald-400">Đúng hướng (Song song)</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mt-1">
+                                    <button onclick="setCollisionOrientation(true)" id="btn-orient-good" class="py-1.5 px-2 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 transition">
+                                        <i class="fa-solid fa-check"></i> Đúng hướng
+                                    </button>
+                                    <button onclick="setCollisionOrientation(false)" id="btn-orient-bad" class="py-1.5 px-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700 transition">
+                                        <i class="fa-solid fa-xmark"></i> Lệch hướng
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Launch & Quick Preset Buttons -->
+                        <div class="flex flex-wrap items-center gap-2 mt-3">
+                            <button onclick="launchCollision()" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-play"></i> Thực hiện va chạm!
+                            </button>
+                            <button onclick="presetCollision(40, true)" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700">
+                                Thử: Thiếu $E_a$
+                            </button>
+                            <button onclick="presetCollision(95, false)" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700">
+                                Thử: Sai hướng
+                            </button>
+                            <button onclick="presetCollision(95, true)" class="py-2.5 px-3 rounded-xl bg-emerald-950/90 hover:bg-emerald-900/80 text-xs text-emerald-300 border border-emerald-500/40">
+                                Thử: Hiệu quả
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 3: GIẢN ĐỒ NĂNG LƯỢNG & PHỨC CHẤT HOẠT ĐỘNG (TRANG 19)
+             ========================================== -->
+        <section id="slide-3" class="slide-section w-full max-w-6xl">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Mục I • Trang 19 SGK</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">2. Giản Đồ Năng Lượng & Trạng Thái Chuyển Tiếp</h2>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="setReactionThermodynamics('exo')" id="btn-exo" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 transition">
+                        Phản ứng tỏa nhiệt ($\Delta_r H < 0$)
+                    </button>
+                    <button onclick="setReactionThermodynamics('endo')" id="btn-endo" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700 transition">
+                        Phản ứng thu nhiệt ($\Delta_r H > 0$)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Interactive Energy Profile Canvas (Feature #3) -->
+                <div class="lg:col-span-7">
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-700/80">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">
+                                <i class="fa-solid fa-chart-line text-cyan-400"></i> Giản đồ tiến trình phản ứng
+                            </span>
+                            <span id="profile-formula-tag" class="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded border border-emerald-500/30">
+                                ΔrH = -40 kJ/mol (Tỏa nhiệt)
+                            </span>
+                        </div>
+
+                        <div class="relative w-full h-64 sm:h-72 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+                            <canvas id="energy-profile-canvas" class="w-full h-full block"></canvas>
+                        </div>
+
+                        <!-- Interactive Ea Slider -->
+                        <div class="mt-4 bg-slate-900/80 p-3.5 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between text-xs mb-1.5">
+                                <span class="text-slate-300 font-semibold">Điều chỉnh hàng rào Năng lượng hoạt hóa ($E_a$):</span>
+                                <span id="ea-slider-label" class="font-mono font-bold text-amber-400 text-sm">Ea = 65 kJ/mol</span>
+                            </div>
+                            <input type="range" id="profile-ea-slider" min="25" max="110" value="65" class="w-full" oninput="drawEnergyProfile()">
+                            <div class="flex justify-between text-[11px] text-slate-400 mt-1.5">
+                                <span>⚡ $E_a$ thấp $\rightarrow$ Phản ứng rất nhanh</span>
+                                <span>🐢 $E_a$ cao $\rightarrow$ Phản ứng rất chậm</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Detailed Concept Explanation -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="glass-card p-4 rounded-2xl space-y-2.5">
+                        <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-mountain-sun"></i> Trạng thái chuyển tiếp (Phức chất hoạt động)
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            Tại đỉnh cao nhất của rào cản năng lượng $E_a$, các phân tử tạo thành một tổ hợp không bền gọi là <strong>phức chất hoạt động</strong> $[A \cdots B]^\ddagger$:
+                        </p>
+                        <ul class="text-xs text-slate-300 space-y-1.5 list-disc pl-4">
+                            <li>Liên kết cũ đang bị kéo giãn và đứt dần.</li>
+                            <li>Liên kết mới đang bắt đầu hình thành.</li>
+                            <li>Nếu vượt qua đỉnh này, phức chất hoạt động sẽ phân rã thành <strong>sản phẩm</strong>.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-2xl space-y-2.5 border-l-4 border-l-violet-400">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-scale-balanced text-violet-400"></i> Phân biệt $E_a$ và $\Delta_r H$
+                        </h3>
+                        <div class="grid grid-cols-1 gap-2 text-xs">
+                            <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+                                <span class="font-bold text-amber-300">Năng lượng hoạt hóa ($E_a$):</span> Chênh lệch năng lượng giữa <em>Trạng thái chuyển tiếp (đỉnh)</em> và <em>Chất phản ứng ban đầu</em>. Luôn dương ($E_a > 0$), quyết định <strong>tốc độ phản ứng</strong>.
+                            </div>
+                            <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
+                                <span class="font-bold text-emerald-300">Biến thiên Enthalpy ($\Delta_r H$):</span> Chênh lệch năng lượng giữa <em>Sản phẩm</em> và <em>Chất phản ứng</em>. Quyết định phản ứng tỏa nhiệt hay thu nhiệt, <strong>không quyết định tốc độ</strong>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-2xl bg-cyan-950/30 border border-cyan-500/30">
+                        <div class="text-xs font-bold text-cyan-300 uppercase mb-1">Quy luật cốt lõi (Trang 19):</div>
+                        <p class="text-xs sm:text-sm text-slate-200">
+                            Ở cùng một nhiệt độ, <strong>$E_a$ càng nhỏ</strong> $\rightarrow$ số phân tử có năng lượng vượt ngưỡng $E_a$ càng nhiều $\rightarrow$ số va chạm hiệu quả càng lớn $\rightarrow$ <strong>tốc độ phản ứng càng nhanh</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 4: PHƯƠNG TRÌNH ARRHENIUS (TRANG 20)
+             ========================================== -->
+        <section id="slide-4" class="slide-section w-full max-w-6xl">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Mục I • Trang 20 SGK</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">3. Phương Trình Arrhenius & Ý Nghĩa Đại Lượng</h2>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 text-xs font-semibold">
+                    Nhà bác học Svante Arrhenius (1859 – 1927) • Giải Nobel Hóa học 1903
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Two Key Formulas -->
+                <div class="lg:col-span-6 space-y-4">
+                    <!-- Formula 1 -->
+                    <div class="glass-panel p-5 rounded-2xl border border-cyan-500/40 neon-border-cyan">
+                        <div class="text-xs font-bold uppercase tracking-wider text-cyan-300 mb-2">
+                            1. Dạng hàm mũ nguyên bản (SGK Trang 20)
+                        </div>
+                        <div class="py-4 px-6 rounded-xl bg-slate-950/90 border border-slate-800 text-center text-2xl sm:text-3xl text-white font-bold">
+                            $$k = A \cdot e^{-\frac{E_a}{RT}}$$
+                        </div>
+                        <p class="text-xs text-slate-300 mt-3 leading-relaxed">
+                            Biểu thị sự phụ thuộc của hằng số tốc độ phản ứng ($k$) vào nhiệt độ tuyệt đối ($T$) và năng lượng hoạt hóa ($E_a$). Hệ số $e^{-\frac{E_a}{RT}}$ biểu thị <strong>phân số các phân tử có năng lượng $\ge E_a$</strong> tại nhiệt độ $T$.
+                        </p>
+                    </div>
+
+                    <!-- Formula 2 -->
+                    <div class="glass-panel p-5 rounded-2xl border border-violet-500/40">
+                        <div class="text-xs font-bold uppercase tracking-wider text-violet-300 mb-2">
+                            2. Dạng Logarit tự nhiên tại 2 nhiệt độ $T_1$ và $T_2$ (Dùng giải bài tập)
+                        </div>
+                        <div class="py-4 px-4 rounded-xl bg-slate-950/90 border border-slate-800 text-center text-lg sm:text-2xl text-white font-bold">
+                            $$\ln\left(\frac{k_2}{k_1}\right) = \frac{E_a}{R} \left(\frac{1}{T_1} - \frac{1}{T_2}\right)$$
+                        </div>
+                        <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 space-y-1">
+                            <div class="font-bold flex items-center gap-1.5 text-amber-300">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Lưu ý sống còn khi bấm máy tính:
+                            </div>
+                            <p>• Vì ở cùng nồng độ, tỉ số tốc độ phản ứng bằng tỉ số hằng số tốc độ: $\frac{v_2}{v_1} = \frac{k_2}{k_1}$.</p>
+                            <p>• Khi đã tính được $\ln\left(\frac{k_2}{k_1}\right) = X$, suy ra: $\frac{k_2}{k_1} = e^X$.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Variable Dictionary & Unit Converter Warning -->
+                <div class="lg:col-span-6 space-y-3">
+                    <div class="glass-card p-5 rounded-2xl space-y-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-white flex items-center gap-2">
+                            <i class="fa-solid fa-table-list text-cyan-400"></i> Giải thích các đại lượng & Đơn vị chuẩn
+                        </h3>
+
+                        <div class="space-y-2.5 text-xs sm:text-sm">
+                            <div class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+                                <span class="w-10 h-10 rounded-lg bg-cyan-500/20 text-cyan-300 font-mono font-bold flex items-center justify-center shrink-0">$k$</span>
+                                <div>
+                                    <div class="font-bold text-white">Hằng số tốc độ phản ứng</div>
+                                    <div class="text-xs text-slate-400">Phụ thuộc bản chất phản ứng và nhiệt độ $T$. Tỉ lệ thuận với tốc độ phản ứng $v$.</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800">
+                                <span class="w-10 h-10 rounded-lg bg-violet-500/20 text-violet-300 font-mono font-bold flex items-center justify-center shrink-0">$A$</span>
+                                <div>
+                                    <div class="font-bold text-white">Thừa số tần số (Hằng số Arrhenius)</div>
+                                    <div class="text-xs text-slate-400">Đặc trưng cho tần số va chạm có định hướng không gian thích hợp.</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/90 border border-rose-500/40">
+                                <span class="w-10 h-10 rounded-lg bg-rose-500/20 text-rose-300 font-mono font-bold flex items-center justify-center shrink-0">$E_a$</span>
+                                <div>
+                                    <div class="font-bold text-rose-300">Năng lượng hoạt hóa (BẮT BUỘC ĐỔI RA J/mol)</div>
+                                    <div class="text-xs text-slate-300">Đề bài thường cho $\text{kJ/mol}$, khi thay vào công thức phải nhân $10^3$ để đồng nhất đơn vị với $R$: $1\text{ kJ/mol} = 1000\text{ J/mol}$.</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/90 border border-emerald-500/40">
+                                <span class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-300 font-mono font-bold flex items-center justify-center shrink-0">$R$</span>
+                                <div>
+                                    <div class="font-bold text-emerald-300">Hằng số khí lý tưởng</div>
+                                    <div class="text-xs text-slate-300 font-mono">Luôn lấy: $R = 8{,}314\text{ J/(mol}\cdot\text{K)}$</div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/40">
+                                <span class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-300 font-mono font-bold flex items-center justify-center shrink-0">$T$</span>
+                                <div>
+                                    <div class="font-bold text-amber-300">Nhiệt độ tuyệt đối Kelvin (K)</div>
+                                    <div class="text-xs text-slate-300 font-mono">$T\text{ (K)} = t\text{ (}^\circ\text{C)} + 273\text{ (hoặc } 273{,}15\text{)}$</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 5: PHÒNG TÍNH TOÁN ARRHENIUS TƯƠNG TÁC (TRANG 20)
+             ========================================== -->
+        <section id="slide-5" class="slide-section w-full max-w-6xl">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Công cụ tương tác • Trang 20 SGK</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">4. Máy Tính Khoa Học Arrhenius (Live Solver)</h2>
+                </div>
+                <div class="flex flex-wrap gap-1.5">
+                    <button onclick="switchCalcMode('find_k2')" id="tab-calc-k2" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition">
+                        Chế độ 1: Tính $k_2$ (hoặc $k_2/k_1$)
+                    </button>
+                    <button onclick="switchCalcMode('find_ea')" id="tab-calc-ea" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+                        Chế độ 2: Tính $E_a$ (kJ/mol)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Input Form & SGK Quick Presets -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-700 space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase text-cyan-400"><i class="fa-solid fa-calculator"></i> Nhập thông số đầu vào</span>
+                            <span class="text-[11px] font-mono text-slate-400">R = 8.314 J/(mol·K)</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1">Nhiệt độ $T_1$ (Kelvin):</label>
+                                <input type="number" id="calc-t1" value="350" step="any" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 outline-none" oninput="runArrheniusCalculator()">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1">Nhiệt độ $T_2$ (Kelvin):</label>
+                                <input type="number" id="calc-t2" value="400" step="any" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white font-mono text-sm focus:border-cyan-400 outline-none" oninput="runArrheniusCalculator()">
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Fields for Mode 1 (Find k2) -->
+                        <div id="calc-fields-k2" class="space-y-3">
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1">Năng lượng hoạt hóa $E_a$ (kJ/mol):</label>
+                                <input type="number" id="calc-ea" value="100" step="any" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-amber-300 font-mono text-sm focus:border-cyan-400 outline-none" oninput="runArrheniusCalculator()">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1">Hằng số tốc độ $k_1$ (Nhập $1$ nếu chỉ tính tỉ số $k_2/k_1$):</label>
+                                <input type="number" id="calc-k1" value="0.000008" step="any" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-emerald-300 font-mono text-sm focus:border-cyan-400 outline-none" oninput="runArrheniusCalculator()">
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Fields for Mode 2 (Find Ea) -->
+                        <div id="calc-fields-ea" class="hidden space-y-3">
+                            <div>
+                                <label class="block text-xs text-slate-300 mb-1">Tỉ số tốc độ tăng lên $\left(\frac{k_2}{k_1} = \frac{v_2}{v_1}\right)$:</label>
+                                <input type="number" id="calc-ratio" value="3" step="any" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-emerald-300 font-mono text-sm focus:border-cyan-400 outline-none" oninput="runArrheniusCalculator()">
+                            </div>
+                        </div>
+
+                        <button onclick="runArrheniusCalculator()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-violet-500 text-slate-950 font-bold text-sm shadow-lg transition">
+                            <i class="fa-solid fa-bolt"></i> Giải chi tiết ngay
+                        </button>
+                    </div>
+
+                    <!-- Quick Presets from SGK Page 20 -->
+                    <div class="glass-card p-4 rounded-2xl space-y-2">
+                        <div class="text-xs font-bold uppercase text-amber-300">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Nạp nhanh dữ liệu 3 bài tập SGK Trang 20:
+                        </div>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="loadSGKPreset(1)" class="text-left px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-slate-200 flex items-center justify-between">
+                                <span><strong>Câu 1 (Tr.20):</strong> $2\text{NOCl} \rightarrow 2\text{NO} + \text{Cl}_2$ ($350\text{K} \rightarrow 400\text{K}$)</span>
+                                <span class="text-cyan-400 font-mono">Nạp <i class="fa-solid fa-arrow-right"></i></span>
+                            </button>
+                            <button onclick="loadSGKPreset(2)" class="text-left px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-slate-200 flex items-center justify-between">
+                                <span><strong>Câu 2 (Tr.20):</strong> Tăng $300\text{K} \rightarrow 310\text{K}$, tốc độ tăng $3$ lần</span>
+                                <span class="text-cyan-400 font-mono">Nạp <i class="fa-solid fa-arrow-right"></i></span>
+                            </button>
+                            <button onclick="loadSGKPreset(3)" class="text-left px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs text-slate-200 flex items-center justify-between">
+                                <span><strong>Câu 3 (Tr.20):</strong> Phân hủy $\text{N}_2\text{O}_5$ từ $45^\circ\text{C} \rightarrow 65^\circ\text{C}$</span>
+                                <span class="text-cyan-400 font-mono">Nạp <i class="fa-solid fa-arrow-right"></i></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Step-by-Step Solution Screen -->
+                <div class="lg:col-span-7">
+                    <div class="glass-panel p-5 rounded-2xl border border-cyan-500/30 h-full flex flex-col justify-between">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                                <i class="fa-solid fa-terminal"></i> Màn hình trình bày lời giải từng bước
+                            </span>
+                            <span id="calc-mode-badge" class="px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-xs font-mono">
+                                Tìm hằng số tốc độ k₂
+                            </span>
+                        </div>
+
+                        <div id="calc-output-steps" class="my-4 space-y-3 text-xs sm:text-sm font-mono text-slate-200 overflow-y-auto max-h-[320px] pr-1">
+                            <!-- Filled dynamically by JS -->
+                        </div>
+
+                        <div id="calc-final-box" class="p-4 rounded-xl bg-gradient-to-r from-emerald-950/80 to-cyan-950/80 border border-emerald-500/40 flex items-center justify-between">
+                            <div>
+                                <div class="text-xs text-emerald-300 uppercase font-bold">Kết quả cuối cùng:</div>
+                                <div id="calc-final-result" class="text-lg sm:text-2xl font-bold font-mono text-white mt-0.5">
+                                    k₂ = 5.91 × 10⁻⁴ L/(mol·s)
+                                </div>
+                            </div>
+                            <i class="fa-solid fa-circle-check text-3xl text-emerald-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 6: HỆ THỐNG BÀI TẬP SGK TRANG 20 (GIẢI CHI TIẾT)
+             ========================================== -->
+        <section id="slide-6" class="slide-section w-full max-w-6xl">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Luyện tập • Trang 20 SGK</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">5. Giải Chi Tiết 3 Câu Hỏi & Bài Tập SGK Trang 20</h2>
+                </div>
+                <span class="text-xs text-slate-400">Bấm vào từng nút <strong>"Mở lời giải"</strong> để trình chiếu từng bước trên lớp</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                <!-- Exercise 1 -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 rounded-md bg-cyan-500/20 text-cyan-300 font-bold text-xs">Câu hỏi 1 • Trang 20</span>
+                            <button onclick="goToSlide(5); loadSGKPreset(1);" class="text-xs text-cyan-400 hover:underline flex items-center gap-1">
+                                Mở bằng Máy tính <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                            Cho phản ứng: $2\text{NOCl}(g) \rightarrow 2\text{NO}(g) + \text{Cl}_2(g)$, có $E_a = 100\text{ kJ/mol}$. Ở $350\text{ K}$, hằng số tốc độ là $k_1 = 8 \times 10^{-6}\text{ L/(mol}\cdot\text{s)}$. Tính hằng số tốc độ phản ứng ở $400\text{ K}$.
+                        </p>
+                        <button onclick="toggleSolution('sol-1')" class="w-full py-2 rounded-lg bg-slate-800 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition">
+                            <i class="fa-solid fa-eye"></i> Xem / Ẩn lời giải chi tiết
+                        </button>
+                        <div id="sol-1" class="hidden p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs text-slate-300 font-mono">
+                            <div class="text-amber-300 font-sans font-bold">• Tóm tắt & Đổi đơn vị:</div>
+                            <div>$E_a = 100\text{ kJ/mol} = 100\,000\text{ J/mol}$</div>
+                            <div>$T_1 = 350\text{ K}; \quad T_2 = 400\text{ K}$</div>
+                            <div class="text-cyan-300 font-sans font-bold pt-1">• Áp dụng phương trình Arrhenius:</div>
+                            <div>$\ln\left(\frac{k_2}{8 \times 10^{-6}}\right) = \frac{100\,000}{8{,}314}\left(\frac{1}{350} - \frac{1}{400}\right)$</div>
+                            <div>$\Rightarrow \ln\left(\frac{k_2}{8 \times 10^{-6}}\right) \approx 4{,}299$</div>
+                            <div>$\Rightarrow \frac{k_2}{8 \times 10^{-6}} = e^{4{,}299} \approx 73{,}63$</div>
+                            <div class="p-2 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-bold">
+                                $\Rightarrow k_2 \approx 5{,}89 \times 10^{-4}\text{ L/(mol}\cdot\text{s)}$
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercise 2 -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 rounded-md bg-violet-500/20 text-violet-300 font-bold text-xs">Câu hỏi 2 • Trang 20</span>
+                            <button onclick="goToSlide(5); loadSGKPreset(2);" class="text-xs text-violet-400 hover:underline flex items-center gap-1">
+                                Mở bằng Máy tính <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                            Tính năng lượng hoạt hóa ($E_a$) của một phản ứng biết rằng khi nhiệt độ tăng từ $300\text{ K}$ lên $310\text{ K}$ thì tốc độ phản ứng tăng lên gấp $3$ lần.
+                        </p>
+                        <button onclick="toggleSolution('sol-2')" class="w-full py-2 rounded-lg bg-slate-800 hover:bg-violet-500/20 text-violet-300 border border-violet-500/30 text-xs font-bold transition">
+                            <i class="fa-solid fa-eye"></i> Xem / Ẩn lời giải chi tiết
+                        </button>
+                        <div id="sol-2" class="hidden p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs text-slate-300 font-mono">
+                            <div class="text-amber-300 font-sans font-bold">• Phân tích dữ kiện:</div>
+                            <div>Vì ở cùng nồng độ chất đầu: $\frac{v_2}{v_1} = \frac{k_2}{k_1} = 3$</div>
+                            <div>$T_1 = 300\text{ K}; \quad T_2 = 310\text{ K}$</div>
+                            <div class="text-violet-300 font-sans font-bold pt-1">• Thay vào phương trình Arrhenius:</div>
+                            <div>$\ln(3) = \frac{E_a}{8{,}314} \left(\frac{1}{300} - \frac{1}{310}\right)$</div>
+                            <div>$\Rightarrow 1{,}0986 = \frac{E_a}{8{,}314} \times \frac{10}{93\,000}$</div>
+                            <div>$\Rightarrow E_a = \frac{1{,}0986 \times 8{,}314 \times 93\,000}{10}$</div>
+                            <div class="p-2 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-bold">
+                                $\Rightarrow E_a \approx 84\,946\text{ J/mol} \approx 84{,}95\text{ kJ/mol}$
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exercise 3 -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-700 flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 font-bold text-xs">Câu hỏi 3 • Trang 20</span>
+                            <button onclick="goToSlide(5); loadSGKPreset(3);" class="text-xs text-emerald-400 hover:underline flex items-center gap-1">
+                                Mở bằng Máy tính <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                            Phản ứng: $2\text{N}_2\text{O}_5(g) \rightarrow 4\text{NO}_2(g) + \text{O}_2(g)$ ở $45^\circ\text{C}$ có $k_1 = 8{,}17 \times 10^{-3}\text{ s}^{-1}$; $E_a = 103{,}5\text{ kJ/mol}$. Tính hằng số tốc độ $k_2$ của phản ứng tại $65^\circ\text{C}$.
+                        </p>
+                        <button onclick="toggleSolution('sol-3')" class="w-full py-2 rounded-lg bg-slate-800 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition">
+                            <i class="fa-solid fa-eye"></i> Xem / Ẩn lời giải chi tiết
+                        </button>
+                        <div id="sol-3" class="hidden p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs text-slate-300 font-mono">
+                            <div class="text-amber-300 font-sans font-bold">• Đổi nhiệt độ sang Kelvin & $E_a$ sang J/mol:</div>
+                            <div>$T_1 = 45 + 273 = 318\text{ K}; \quad T_2 = 65 + 273 = 338\text{ K}$</div>
+                            <div>$E_a = 103{,}5\text{ kJ/mol} = 103\,500\text{ J/mol}$</div>
+                            <div class="text-emerald-300 font-sans font-bold pt-1">• Áp dụng công thức:</div>
+                            <div>$\ln\left(\frac{k_2}{8{,}17 \times 10^{-3}}\right) = \frac{103\,500}{8{,}314}\left(\frac{1}{318} - \frac{1}{338}\right)$</div>
+                            <div>$\Rightarrow \ln\left(\frac{k_2}{8{,}17 \times 10^{-3}}\right) \approx 2{,}316 \Rightarrow \frac{k_2}{k_1} \approx 10{,}135$</div>
+                            <div class="p-2 rounded bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 font-bold">
+                                $\Rightarrow k_2 \approx 8{,}28 \times 10^{-2}\text{ s}^{-1}$
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 7: CHẤT XÚC TÁC & NĂNG LƯỢNG HOẠT HÓA (TRANG 21)
+             ========================================== -->
+        <section id="slide-7" class="slide-section w-full max-w-6xl">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Mục II • Trang 21 SGK</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">6. Ảnh Hưởng Của Chất Xúc Tác Đến Năng Lượng Hoạt Hóa</h2>
+                </div>
+                <button onclick="toggleCatalystCurve()" id="btn-toggle-cat" class="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition flex items-center gap-2">
+                    <i class="fa-solid fa-toggle-on" id="cat-toggle-icon"></i>
+                    <span id="cat-toggle-text">Đang bật đường cong Có Xúc Tác</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Interactive Catalyst Energy Diagram -->
+                <div class="lg:col-span-7">
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-700">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3 text-xs">
+                            <span class="font-bold text-slate-200 uppercase"><i class="fa-solid fa-bezier-curve text-emerald-400"></i> Giản đồ so sánh Không xúc tác vs Có xúc tác</span>
+                            <div class="flex items-center gap-3">
+                                <span class="flex items-center gap-1.5 text-rose-400 font-semibold"><span class="w-3 h-1 bg-rose-500 inline-block rounded"></span> Không xúc tác ($E_a$)</span>
+                                <span class="flex items-center gap-1.5 text-emerald-400 font-semibold"><span class="w-3 h-1 bg-emerald-400 inline-block rounded"></span> Có xúc tác ($E_a'$)</span>
+                            </div>
+                        </div>
+
+                        <div class="relative w-full h-64 sm:h-72 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+                            <canvas id="catalyst-chart-canvas" class="w-full h-full block"></canvas>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2.5 mt-3 text-center text-xs">
+                            <div class="p-2.5 rounded-xl bg-rose-950/40 border border-rose-500/30">
+                                <div class="text-slate-400">Không có xúc tác</div>
+                                <div class="text-rose-400 font-bold font-mono text-sm mt-0.5">$E_a$ rất cao</div>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30">
+                                <div class="text-slate-400">Khi có mặt xúc tác</div>
+                                <div class="text-emerald-400 font-bold font-mono text-sm mt-0.5">$E_a' \ll E_a$</div>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-500/30">
+                                <div class="text-slate-400">Biến thiên Enthalpy</div>
+                                <div class="text-cyan-300 font-bold font-mono text-sm mt-0.5">$\Delta_r H = \text{const}$</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Mechanism & Key Takeaways from Page 21 -->
+                <div class="lg:col-span-5 space-y-4">
+                    <div class="glass-card p-4 rounded-2xl border-l-4 border-l-emerald-400 space-y-2">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-route text-emerald-400"></i> Cơ chế giảm $E_a$ của chất xúc tác
+                        </h3>
+                        <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                            Chất xúc tác hướng phản ứng đi theo <strong>một con đường khác (cơ chế mới)</strong> qua một hoặc nhiều giai đoạn trung gian có năng lượng hoạt hóa thấp hơn nhiều ($E_a' < E_a$):
+                        </p>
+                        <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs space-y-1 text-slate-200">
+                            <div class="text-rose-300">• Không xúc tác: $\text{A} + \text{B} \longrightarrow \text{AB}$ &nbsp;($E_a$ cao)</div>
+                            <div class="text-emerald-300">• Có xúc tác $\text{X}$:</div>
+                            <div class="pl-3">Giai đoạn 1: $\text{A} + \text{X} \longrightarrow \text{AX}$ &nbsp;($E_{a1}'$ thấp)</div>
+                            <div class="pl-3">Giai đoạn 2: $\text{AX} + \text{B} \longrightarrow \text{AB} + \text{X}$ &nbsp;($E_{a2}'$ thấp)</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-4 rounded-2xl space-y-2.5">
+                        <h4 class="text-sm font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-star"></i> 3 Đặc điểm quan trọng cần nhớ (Trang 21)
+                        </h4>
+                        <ul class="space-y-2 text-xs sm:text-sm text-slate-300">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400 mt-1"></i>
+                                <span><strong>Được hoàn nguyên:</strong> Chất xúc tác tham gia vào giai đoạn trung gian nhưng được tái tạo hoàn toàn về lượng và bản chất hóa học sau phản ứng.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-circle-check text-cyan-400 mt-1"></i>
+                                <span><strong>Không đổi $\Delta_r H$:</strong> Xúc tác không làm thay đổi năng lượng của chất đầu và sản phẩm, nên <strong>$\Delta_r H$ giữ nguyên</strong>.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-circle-check text-violet-400 mt-1"></i>
+                                <span><strong>Tăng mạnh số va chạm hiệu quả:</strong> Nhờ hạ thấp rào cản xuống $E_a'$, số phân tử đủ năng lượng phản ứng tăng theo cấp số mũ.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 8: SUY GIẢM TẦNG OZONE & BÀI TOÁN ĐỊNH LƯỢNG (TRANG 22)
+             ========================================== -->
+        <section id="slide-8" class="slide-section w-full max-w-6xl">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-rose-400">Vận dụng • Trang 22 SGK</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">7. Cơ Chế Phá Hủy Tầng Ozone & Định Lượng Xúc Tác</h2>
+                </div>
+                <span class="px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-semibold">
+                    Giải chi tiết Câu hỏi 4 & Câu hỏi 5 (SGK Trang 22)
+                </span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Question 4 - Ozone Depletion Step-by-Step Animator (Feature #5) -->
+                <div class="lg:col-span-6">
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-700 h-full flex flex-col justify-between space-y-4">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="px-2.5 py-1 rounded bg-rose-500/20 text-rose-300 text-xs font-bold">Câu hỏi 4 • Trang 22: Sự suy giảm tầng Ozone</span>
+                                <span id="ozone-step-indicator" class="text-xs font-mono text-cyan-400">Bước 0 / 2</span>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Các hợp chất CFC phát thải lên tầng bình lưu bị tia UV phân hủy tạo gốc tự do Chlorine ($\text{Cl}^\bullet$), phá hủy $\text{O}_3$ theo chu trình 2 giai đoạn:
+                            </p>
+                        </div>
+
+                        <!-- Interactive Reaction Step Visualizer -->
+                        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                            <div id="ozone-step-1" class="p-3 rounded-lg bg-slate-900/90 border border-slate-800 transition-all">
+                                <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                    <span>Giai đoạn (1): Tạo hợp chất trung gian $\text{ClO}$</span>
+                                    <span class="font-mono text-amber-400">Tiêu thụ $\text{Cl}$</span>
+                                </div>
+                                <div class="text-base sm:text-lg font-mono font-bold text-white text-center">
+                                    $\text{Cl} + \text{O}_3 \longrightarrow \text{ClO} + \text{O}_2$
+                                </div>
+                            </div>
+
+                            <div id="ozone-step-2" class="p-3 rounded-lg bg-slate-900/90 border border-slate-800 transition-all">
+                                <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                    <span>Giai đoạn (2): Tái tạo nguyên tử $\text{Cl}$ tự do</span>
+                                    <span class="font-mono text-emerald-400">Hoàn nguyên $\text{Cl}$</span>
+                                </div>
+                                <div class="text-base sm:text-lg font-mono font-bold text-white text-center">
+                                    $\text{ClO} + \text{O}_3 \longrightarrow \text{Cl} + 2\text{O}_2$
+                                </div>
+                            </div>
+
+                            <div id="ozone-step-sum" class="p-3 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-center">
+                                <div class="text-[11px] uppercase font-bold text-cyan-300">Phương trình tổng cộng:</div>
+                                <div class="text-base font-mono font-bold text-white mt-0.5">
+                                    $2\text{O}_3 \xrightarrow{\text{Xúc tác Cl}} 3\text{O}_2$
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="stepOzoneCycle()" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-500 to-amber-500 text-slate-950 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-forward-step"></i> Chạy mô phỏng từng giai đoạn
+                            </button>
+                            <button onclick="resetOzoneCycle()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs border border-slate-700">
+                                Đặt lại
+                            </button>
+                        </div>
+
+                        <div class="p-3 rounded-xl bg-slate-900/90 border-l-4 border-l-emerald-400 text-xs text-slate-200 space-y-1">
+                            <div class="font-bold text-emerald-400">Kết luận Câu 4 (Trang 22):</div>
+                            <p>• <strong>Chất xúc tác là $\text{Cl}$</strong> vì tham gia ở giai đoạn (1) và được <strong>tái tạo nguyên vẹn</strong> ở giai đoạn (2). (Một nguyên tử $\text{Cl}$ có thể phá hủy tới $100\,000$ phân tử $\text{O}_3$!)</p>
+                            <p>• <strong>$\text{ClO}$ là chất trung gian phản ứng</strong> (sinh ra ở giai đoạn 1 rồi mất đi ở giai đoạn 2).</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Question 5 - Quantitative Catalyst Proof at 500°C -->
+                <div class="lg:col-span-6">
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-700 h-full flex flex-col justify-between space-y-4">
+                        <div>
+                            <span class="px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-300 text-xs font-bold">Câu hỏi 5 • Trang 22: Chứng minh định lượng vai trò xúc tác</span>
+                            <p class="text-xs sm:text-sm text-slate-200 mt-2 leading-relaxed">
+                                <strong>Đề bài:</strong> Một phản ứng xảy ra ở $500^\circ\text{C}$, năng lượng hoạt hóa của phản ứng khi không có chất xúc tác là $E_a = 55{,}4\text{ kJ/mol}$ và khi có chất xúc tác là $E_a' = 13{,}5\text{ kJ/mol}$. Chứng minh rằng chất xúc tác làm tăng tốc độ phản ứng (coi thừa số $A$ không đổi).
+                            </p>
+                        </div>
+
+                        <!-- Mathematical Proof Step Box -->
+                        <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs space-y-2 text-slate-200">
+                            <div class="text-amber-300 font-sans font-bold">1. Đổi đơn vị chuẩn tại cùng nhiệt độ $T$:</div>
+                            <div>• $T = 500 + 273 = 773\text{ K}$</div>
+                            <div>• Không xúc tác: $E_a = 55{,}4\text{ kJ/mol} = 55\,400\text{ J/mol}$</div>
+                            <div>• Có xúc tác: $E_a' = 13{,}5\text{ kJ/mol} = 13\,500\text{ J/mol}$</div>
+
+                            <div class="text-cyan-300 font-sans font-bold pt-1">2. Lập tỉ số hằng số tốc độ $\frac{k_{\text{xt}}}{k_0}$ từ phương trình Arrhenius:</div>
+                            <div class="text-sm text-white py-1">
+                                $$\ln\left(\frac{k_{\text{xt}}}{k_0}\right) = \frac{E_a - E_a'}{R \cdot T} = \frac{55\,400 - 13\,500}{8{,}314 \times 773}$$
+                            </div>
+                            <div>$\Rightarrow \ln\left(\frac{k_{\text{xt}}}{k_0}\right) = \frac{41\,900}{6426{,}722} \approx 6{,}5197$</div>
+                            <div>$\Rightarrow \frac{v_{\text{xt}}}{v_0} = \frac{k_{\text{xt}}}{k_0} = e^{6{,}5197} \approx 678\text{ lần!}$</div>
+                        </div>
+
+                        <!-- Visual Speed Comparison Bar -->
+                        <div class="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 space-y-2">
+                            <div class="flex justify-between text-xs font-bold">
+                                <span class="text-slate-300">Tốc độ không xúc tác ($v_0$): <span class="text-rose-400">1x</span></span>
+                                <span class="text-emerald-300">Tốc độ có xúc tác ($v_{\text{xt}}$): <span class="text-base font-mono">~678x</span></span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-3 rounded-full overflow-hidden p-0.5">
+                                <div class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full animate-pulse" style="width: 100%;"></div>
+                            </div>
+                            <p class="text-[11px] text-slate-300">
+                                ✅ <strong>Kết luận:</strong> Nhờ giảm $E_a$ từ $55{,}4$ xuống $13{,}5\text{ kJ/mol}$, ở $500^\circ\text{C}$ tốc độ phản ứng tăng vọt gấp khoảng <strong>678 lần</strong> (nếu lấy $T = 773{,}15\text{ K}$ là $\approx 676$ lần).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 9: ỨNG DỤNG THỰC TIỄN & "EM CÓ THỂ" (TRANG 23)
+             ========================================== -->
+        <section id="slide-9" class="slide-section w-full max-w-6xl">
+            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Tổng kết & Ứng dụng • Trang 23 SGK</span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">8. Ứng Dụng Thực Tiễn & Mục "Em Có Thể"</h2>
+                </div>
+                <span class="text-xs text-emerald-400 font-semibold"><i class="fa-solid fa-hand-pointer"></i> Bấm vào từng thẻ ứng dụng để xem cơ chế hóa học</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
+                <!-- Application Card 1: Enzyme -->
+                <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-emerald-400">
+                    <div class="space-y-2.5">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-dna"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-white">1. Xúc tác sinh học (Enzyme)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Các phản ứng tiêu hóa tinh bột, protein trong cơ thể xảy ra cực nhanh ở nhiệt độ thân nhiệt <strong>$37^\circ\text{C}$</strong> và $\text{pH}$ trung tính.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-emerald-300 font-mono">
+                        • Enzyme Amylase (nước bọt), Pepsin (dạ dày), Catalase phân hủy $\text{H}_2\text{O}_2$ giảm $E_a$ từ $75$ xuống $8\text{ kJ/mol}$!
+                    </div>
+                </div>
+
+                <!-- Application Card 2: Haber-Bosch -->
+                <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-cyan-400">
+                    <div class="space-y-2.5">
+                        <div class="w-11 h-11 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-industry"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-white">2. Tổng hợp Ammonia ($\text{NH}_3$)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Phân tử $\text{N}_2$ có liên kết ba $\text{N}\equiv\text{N}$ cực bền ($E_b = 945\text{ kJ/mol}$). Không có xúc tác, phản ứng hầu như không xảy ra.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-cyan-300 font-mono">
+                        • Phương trình: $\text{N}_2 + 3\text{H}_2 \xrightleftharpoons{\text{Fe, } t^\circ, p} 2\text{NH}_3$<br>
+                        • Xúc tác bột sắt ($\text{Fe}$) hấp phụ làm yếu liên kết $\text{N}\equiv\text{N}$.
+                    </div>
+                </div>
+
+                <!-- Application Card 3: Sulfuric Acid Contact Process -->
+                <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-amber-400">
+                    <div class="space-y-2.5">
+                        <div class="w-11 h-11 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-flask"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-white">3. Sản xuất $\text{H}_2\text{SO}_4$ công nghiệp</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Giai đoạn quyết định tốc độ là oxi hóa $\text{SO}_2$ thành $\text{SO}_3$. Nhờ xúc tác $\text{V}_2\text{O}_5$, hiệu suất đạt trên $98\%$.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-amber-300 font-mono">
+                        • Phương trình: $2\text{SO}_2 + \text{O}_2 \xrightleftharpoons{\text{V}_2\text{O}_5, 450^\circ\text{C}} 2\text{SO}_3$<br>
+                        • Hạ mạnh rào cản $E_a$ thông qua chu trình oxi hóa - khử $\text{V}^{+5}/\text{V}^{+4}$.
+                    </div>
+                </div>
+
+                <!-- Application Card 4: Catalytic Converter -->
+                <div class="glass-card p-5 rounded-2xl flex flex-col justify-between border-t-4 border-t-violet-400">
+                    <div class="space-y-2.5">
+                        <div class="w-11 h-11 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-car-side"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-white">4. Bộ xử lý khí thải Ô tô, Xe máy</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Chuyển hóa các khí độc hại ($\text{CO}, \text{NO}_x$, hydrocarbon dư) trong ống xả thành khí không độc ($\text{CO}_2, \text{N}_2, \text{H}_2\text{O}$) trong vài mili-giây.
+                        </p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] text-violet-300 font-mono">
+                        • Xúc tác kim loại quý: Platinum ($\text{Pt}$), Palladium ($\text{Pd}$), Rhodium ($\text{Rh}$) phủ trên gốm tổ ong.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Box ("Em Đã Học" - Page 23) -->
+            <div class="glass-panel p-5 rounded-2xl border border-cyan-500/40 bg-gradient-to-r from-slate-900 via-cyan-950/30 to-slate-900">
+                <h3 class="text-sm font-bold uppercase tracking-wider text-cyan-300 flex items-center gap-2 mb-3">
+                    <i class="fa-solid fa-graduation-cap"></i> Tổng kết trọng tâm Bài 3 (SGK Trang 23)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm text-slate-200">
+                    <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+                        <strong class="text-cyan-400">1. Năng lượng hoạt hóa ($E_a$):</strong> Là năng lượng tối thiểu các phân tử chất phản ứng cần có để tạo va chạm hiệu quả. $E_a$ càng nhỏ, phản ứng càng nhanh.
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+                        <strong class="text-violet-400">2. Phương trình Arrhenius:</strong> $\ln(k_2/k_1) = \frac{E_a}{R}(\frac{1}{T_1} - \frac{1}{T_2})$ cho phép tính toán định lượng mối quan hệ giữa $k, T$ và $E_a$.
+                    </div>
+                    <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+                        <strong class="text-emerald-400">3. Vai trò chất xúc tác:</strong> Làm giảm năng lượng hoạt hóa ($E_a' < E_a$) qua các giai đoạn trung gian nhưng không làm thay đổi $\Delta_r H$.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             SLIDE 10: MINI-GAME TRẮC NGHIỆM CỦNG CỐ (5 CÂU HỎI)
+             ========================================== -->
+        <section id="slide-10" class="slide-section w-full max-w-4xl">
+            <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-cyan-500/40 relative overflow-hidden">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-6 border-b border-slate-800 pb-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Tương tác cuối bài • Kiểm tra nhanh</span>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white">9. Thử Thách Chinh Phục Năng Lượng Hoạt Hóa</h2>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs font-bold">
+                            Điểm số: <span id="quiz-score" class="text-emerald-400 font-mono text-base">0 / 5</span>
+                        </div>
+                        <button onclick="resetQuiz()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 border border-slate-700">
+                            <i class="fa-solid fa-rotate"></i> Làm lại
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Question Container -->
+                <div id="quiz-container" class="space-y-5">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BOTTOM SLIDE NAVIGATION DOCK (Feature #1) -->
+    <footer class="glass-panel sticky bottom-0 z-30 px-4 lg:px-8 py-2.5 flex items-center justify-between border-t border-slate-800/80">
+        <div class="flex items-center gap-2 text-xs text-slate-400">
+            <span class="hidden md:inline"><i class="fa-solid fa-circle-info text-cyan-400"></i> Mẹo: Dùng phím mũi tên <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-slate-200">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-800 rounded text-slate-200">→</kbd> để chuyển Slide</span>
+        </div>
+
+        <!-- Slide Controls & Dots -->
+        <div class="flex items-center gap-3">
+            <button onclick="prevSlide()" id="btn-prev-slide" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-cyan-500/20 text-slate-200 hover:text-cyan-300 border border-slate-700 transition text-xs sm:text-sm font-semibold flex items-center gap-1.5">
+                <i class="fa-solid fa-chevron-left"></i> Trước
+            </button>
+
+            <div class="px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 font-mono text-xs sm:text-sm font-bold text-cyan-400">
+                Slide <span id="current-slide-num">1</span> / 10
+            </div>
+
+            <button onclick="nextSlide()" id="btn-next-slide" class="px-3.5 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-500/20">
+                Tiếp theo <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="hidden sm:flex items-center gap-1.5" id="slide-dots-container">
+            <!-- Dots generated by JS -->
+        </div>
+    </footer>
+
+    <!-- ==========================================
+         MODALS & DRAWERS (TOC, SPEAKER NOTES, SHORTCUTS)
+         ========================================== -->
+
+    <!-- 1. Table of Contents Drawer (Feature #1) -->
+    <div id="toc-drawer" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex justify-start">
+        <div class="w-80 sm:w-96 bg-slate-900 border-r border-slate-800 h-full p-5 flex flex-col justify-between overflow-y-auto">
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <h3 class="font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-ol text-cyan-400"></i> Danh Sách 10 Slide Bài Giảng
+                    </h3>
+                    <button onclick="toggleTOC()" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div id="toc-list" class="mt-4 space-y-2">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+            <div class="pt-4 border-t border-slate-800 text-xs text-slate-400">
+                Chuyên đề học tập Hóa học 10 • Kết nối tri thức với cuộc sống (Trang 19 – 23)
+            </div>
+        </div>
+        <div class="flex-1" onclick="toggleTOC()"></div>
+    </div>
+
+    <!-- 2. Speaker Notes Drawer for Presenter (Feature #7) -->
+    <div id="speaker-notes-drawer" class="fixed bottom-14 right-4 w-80 sm:w-96 glass-panel rounded-2xl border border-violet-500/40 p-4 z-40 hidden shadow-2xl">
+        <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-800">
+            <span class="text-xs font-bold uppercase tracking-wider text-violet-300 flex items-center gap-1.5">
+                <i class="fa-solid fa-chalkboard-user"></i> Kịch bản nói (Speaker Notes)
+            </span>
+            <button onclick="toggleSpeakerNotes()" class="text-slate-400 hover:text-white text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div id="speaker-notes-content" class="text-xs sm:text-sm text-slate-200 leading-relaxed max-h-56 overflow-y-auto space-y-2">
+            <!-- Filled dynamically per slide -->
+        </div>
+    </div>
+
+    <!-- 3. Keyboard Shortcuts Modal (Feature #8) -->
+    <div id="shortcuts-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel max-w-md w-full rounded-2xl border border-cyan-500/40 p-6 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-regular fa-keyboard text-cyan-400"></i> Phím Tắt Điều Khiển Thuyết Trình
+                </h3>
+                <button onclick="toggleShortcutsModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-2.5 text-xs sm:text-sm">
+                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/70">
+                    <span class="text-slate-300">Chuyển Slide tiếp theo / lùi lại</span>
+                    <span class="font-mono"><kbd class="px-2 py-1 bg-slate-800 rounded text-cyan-300">→</kbd> / <kbd class="px-2 py-1 bg-slate-800 rounded text-cyan-300">←</kbd></span>
+                </div>
+                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/70">
+                    <span class="text-slate-300">Bật / Tắt Bút Laser đỏ</span>
+                    <kbd class="px-2 py-1 bg-slate-800 rounded text-rose-300 font-mono">L</kbd>
+                </div>
+                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/70">
+                    <span class="text-slate-300">Bật / Tắt Bút vẽ ghi chú màn hình</span>
+                    <kbd class="px-2 py-1 bg-slate-800 rounded text-amber-300 font-mono">D</kbd>
+                </div>
+                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/70">
+                    <span class="text-slate-300">Mở Kịch bản thuyết trình (Ghi chú GV)</span>
+                    <kbd class="px-2 py-1 bg-slate-800 rounded text-violet-300 font-mono">S</kbd>
+                </div>
+                <div class="flex justify-between items-center py-1.5 border-b border-slate-800/70">
+                    <span class="text-slate-300">Mở Mục lục nhảy nhanh</span>
+                    <kbd class="px-2 py-1 bg-slate-800 rounded text-emerald-300 font-mono">M</kbd>
+                </div>
+                <div class="flex justify-between items-center py-1.5">
+                    <span class="text-slate-300">Chế độ Toàn màn hình (Fullscreen)</span>
+                    <kbd class="px-2 py-1 bg-slate-800 rounded text-cyan-300 font-mono">F</kbd>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT ENGINE FOR ALL 8+ INTERACTIVE FEATURES
+         ========================================== -->
+    <script>
+        /* -----------------------------------------------------------
+           1. SLIDE NAVIGATION & SPEAKER NOTES DATA
+        ----------------------------------------------------------- */
+        let currentSlide = 1;
+        const totalSlides = 10;
+
+        const slideMetadata = [
+            { id: 1, title: "1. Mở đầu: Thí nghiệm H₂ + O₂ xúc tác Pt", page: "Trang 19", notes: "Chào thầy cô và các bạn. Mở đầu bài học trang 19, chúng ta có bình chứa hỗn hợp khí H₂ và O₂. Ở nhiệt độ phòng, chúng va chạm nhưng không hề tạo thành nước. Hãy nhìn lên màn hình khi tôi nhấn nút 'Thả bột xúc tác Pt': Phản ứng nổ ngay lập tức! Vì sao bột Pt làm được điều đó? Chúng ta cùng vào Bài 3." },
+            { id: 2, title: "2. Thuyết va chạm & Va chạm hiệu quả", page: "Trang 19", notes: "Ở mục I trang 19: Để phản ứng xảy ra, các hạt chất phản ứng phải va chạm nhau. Nhưng chỉ 'va chạm hiệu quả' mới sinh ra phản ứng. Trên mô phỏng 2D, các bạn thấy nếu năng lượng < Ea (70 kJ/mol) hoặc va chạm lệch hướng thì các phân tử chỉ bật ra. Khi đủ Ea và đúng hướng, liên kết mới hình thành." },
+            { id: 3, title: "3. Giản đồ năng lượng & Trạng thái chuyển tiếp", page: "Trang 19", notes: "Đây là giản đồ năng lượng trang 19. Đỉnh đồi năng lượng là Trạng thái chuyển tiếp (phức chất hoạt động). Khoảng cách từ chất đầu lên đỉnh là Năng lượng hoạt hóa Ea. Hãy kéo thanh trượt Ea để thấy: dù phản ứng tỏa nhiệt hay thu nhiệt đều phải vượt qua hàng rào Ea này." },
+            { id: 4, title: "4. Phương trình Arrhenius & Hệ đơn vị chuẩn", page: "Trang 20", notes: "Sang trang 20, nhà bác học Svante Arrhenius đã thiết lập công thức định lượng giữa k, Ea và T. Khi giải bài tập, các bạn đặc biệt lưu ý 2 bẫy đơn vị: Ea phải đổi từ kJ/mol sang J/mol (nhân 1000) để khớp với R = 8,314 J/(mol.K), và nhiệt độ T bắt buộc đổi sang Kelvin (+273)." },
+            { id: 5, title: "5. Phòng tính toán Arrhenius tương tác", page: "Trang 20", notes: "Trên slide này là Máy tính khoa học Arrhenius trực tiếp. Chúng ta có thể nạp nhanh số liệu của cả 3 bài tập trang 20 hoặc thay đổi bất kỳ nhiệt độ T1, T2 nào để máy tự động trình bày các bước biến đổi logarit tự nhiên." },
+            { id: 6, title: "6. Giải chi tiết 3 Bài tập SGK Trang 20", page: "Trang 20", notes: "Slide tổng hợp lời giải chuẩn của 3 bài tập trang 20: Câu 1 (phân hủy NOCl tăng tốc gần 74 lần khi tăng từ 350K lên 400K); Câu 2 (tìm Ea = 84,95 kJ/mol); Câu 3 (phân hủy N₂O₅ tăng từ 45°C lên 65°C). Tôi sẽ bấm mở từng lời giải để lớp đối chiếu." },
+            { id: 7, title: "7. Chất xúc tác & Cơ chế hạ thấp Ea", page: "Trang 21", notes: "Ở trang 21, chúng ta trả lời câu hỏi đầu bài: Chất xúc tác không làm thay đổi ΔrH của phản ứng, mà nó dẫn phản ứng đi theo con đường mới gồm các giai đoạn trung gian có năng lượng hoạt hóa Ea' thấp hơn hẳn so với Ea ban đầu." },
+            { id: 8, title: "8. Sự suy giảm tầng Ozone & Bài toán trang 22", page: "Trang 22", notes: "Trang 22 đưa ra 2 bài toán thực tiễn rất hay: Câu 4 giải thích vì sao gốc tự do Cl từ khí CFC đóng vai trò chất xúc tác phá hủy hàng trăm nghìn phân tử O₃ (vì Cl tham gia ở bước 1 và hoàn nguyên ở bước 2). Câu 5 chứng minh ở 500°C, nhờ xúc tác hạ Ea từ 55,4 xuống 13,5 kJ/mol mà tốc độ tăng gấp ~678 lần." },
+            { id: 9, title: "9. Ứng dụng Enzyme, Công nghiệp & Tổng kết", page: "Trang 23", notes: "Trang 23 tổng kết ứng dụng của xúc tác: Từ enzyme tiêu hóa hoạt động êm dịu ở 37°C trong cơ thể người, đến công nghiệp sản xuất NH₃ (xúc tác Fe), H₂SO₄ (xúc tác V₂O₅) và bộ chuyển đổi xúc tác gắn trong ống xả ô tô xe máy." },
+            { id: 10, title: "10. Mini-Game Trắc nghiệm củng cố", page: "Ôn tập", notes: "Cuối cùng, mời cả lớp cùng tham gia trả lời nhanh 5 câu hỏi trắc nghiệm tương tác để củng cố toàn bộ kiến thức từ trang 19 đến trang 23." }
+        ];
+
+        function initNavigation() {
+            const dotsContainer = document.getElementById('slide-dots-container');
+            const tocList = document.getElementById('toc-list');
+            dotsContainer.innerHTML = '';
+            tocList.innerHTML = '';
+
+            slideMetadata.forEach(item => {
+                // Create bottom dot
+                const dot = document.createElement('button');
+                dot.id = `dot-${item.id}`;
+                dot.onclick = () => goToSlide(item.id);
+                dot.title = item.title;
+                dot.className = `h-2 rounded-full transition-all ${item.id === currentSlide ? 'w-6 bg-cyan-400' : 'w-2 bg-slate-700 hover:bg-slate-500'}`;
+                dotsContainer.appendChild(dot);
+
+                // Create TOC entry
+                const tocBtn = document.createElement('button');
+                tocBtn.onclick = () => { goToSlide(item.id); toggleTOC(); };
+                tocBtn.className = `w-full text-left p-3 rounded-xl border transition flex items-center justify-between ${item.id === currentSlide ? 'bg-cyan-500/20 border-cyan-500/50 text-white' : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:bg-slate-800'}`;
+                tocBtn.innerHTML = `
+                    <span class="text-xs font-medium truncate pr-2">${item.title}</span>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-cyan-300 shrink-0">${item.page}</span>
+                `;
+                tocList.appendChild(tocBtn);
+            });
+
+            updateSlideUI();
+        }
+
+        function goToSlide(slideIndex) {
+            if (slideIndex < 1 || slideIndex > totalSlides) return;
+            document.querySelectorAll('.slide-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(`slide-${slideIndex}`).classList.add('active');
+            currentSlide = slideIndex;
+            updateSlideUI();
+
+            // Redraw canvases on slide activation so dimensions are accurate
+            setTimeout(() => {
+                if (currentSlide === 1) resizeH2O2Canvas();
+                if (currentSlide === 2) resizeCollisionCanvas();
+                if (currentSlide === 3) drawEnergyProfile();
+                if (currentSlide === 5) runArrheniusCalculator();
+                if (currentSlide === 7) drawCatalystChart();
+            }, 60);
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) goToSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) goToSlide(currentSlide - 1);
+        }
+
+        function updateSlideUI() {
+            document.getElementById('current-slide-num').textContent = currentSlide;
+            document.getElementById('slide-progress-bar').style.width = `${(currentSlide / totalSlides) * 100}%`;
+
+            // Update dots
+            for (let i = 1; i <= totalSlides; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (dot) {
+                    dot.className = `h-2 rounded-full transition-all ${i === currentSlide ? 'w-6 bg-cyan-400' : 'w-2 bg-slate-700 hover:bg-slate-500'}`;
+                }
+            }
+
+            // Update Speaker Notes
+            const meta = slideMetadata.find(m => m.id === currentSlide);
+            if (meta) {
+                document.getElementById('speaker-notes-content').innerHTML = `
+                    <div class="text-xs font-bold text-cyan-300">${meta.title} (${meta.page})</div>
+                    <p class="mt-1 text-slate-200">${meta.notes}</p>
+                `;
+            }
+        }
+
+        function toggleTOC() {
+            const drawer = document.getElementById('toc-drawer');
+            drawer.classList.toggle('hidden');
+            initNavigation();
+        }
+
+        function toggleSpeakerNotes() {
+            document.getElementById('speaker-notes-drawer').classList.toggle('hidden');
+        }
+
+        function toggleShortcutsModal() {
+            document.getElementById('shortcuts-modal').classList.toggle('hidden');
+        }
+
+        function toggleSolution(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        function toggleFullScreen() {
+            const icon = document.getElementById('fullscreen-icon');
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                icon.className = 'fa-solid fa-compress';
+            } else {
+                document.exitFullscreen().catch(() => {});
+                icon.className = 'fa-solid fa-expand';
+            }
+        }
+
+        /* -----------------------------------------------------------
+           2. SLIDE 1: H2 + O2 + Pt CATALYST EXPERIMENT SIMULATOR
+        ----------------------------------------------------------- */
+        let h2o2Particles = [];
+        let ptCatalystAdded = false;
+        let h2o2Canvas, h2o2Ctx;
+
+        function initH2O2Experiment() {
+            h2o2Canvas = document.getElementById('h2o2-canvas');
+            if (!h2o2Canvas) return;
+            h2o2Ctx = h2o2Canvas.getContext('2d');
+            resizeH2O2Canvas();
+            resetPtExperiment();
+            animateH2O2();
+        }
+
+        function resizeH2O2Canvas() {
+            if (!h2o2Canvas) return;
+            const rect = h2o2Canvas.parentElement.getBoundingClientRect();
+            h2o2Canvas.width = rect.width || 400;
+            h2o2Canvas.height = rect.height || 256;
+        }
+
+        function resetPtExperiment() {
+            ptCatalystAdded = false;
+            h2o2Particles = [];
+            const w = h2o2Canvas ? h2o2Canvas.width : 400;
+            const h = h2o2Canvas ? h2o2Canvas.height : 250;
+
+            // Create H2 and O2 molecules
+            for (let i = 0; i < 18; i++) {
+                h2o2Particles.push({
+                    x: Math.random() * (w - 40) + 20,
+                    y: Math.random() * (h - 40) + 20,
+                    vx: (Math.random() - 0.5) * 2.2,
+                    vy: (Math.random() - 0.5) * 2.2,
+                    type: i < 12 ? 'H2' : 'O2',
+                    r: i < 12 ? 6 : 9
+                });
+            }
+
+            const statusBadge = document.getElementById('pt-exp-status');
+            const explainBox = document.getElementById('pt-exp-explain');
+            if (statusBadge) {
+                statusBadge.textContent = '25°C • Chưa phản ứng';
+                statusBadge.className = 'px-2 py-0.5 text-[11px] rounded bg-slate-800 text-slate-300 border border-slate-700';
+            }
+            if (explainBox) {
+                explainBox.innerHTML = '💡 <strong>Quan sát:</strong> Ở 25°C, các phân tử H₂ và O₂ chuyển động va chạm nhưng <strong>không đủ năng lượng hoạt hóa (Ea)</strong> để phá vỡ liên kết bền vững. Hãy bấm <em>"Thả bột xúc tác Pt"</em>!';
+            }
+        }
+
+        function triggerPtCatalyst() {
+            if (ptCatalystAdded) return;
+            ptCatalystAdded = true;
+
+            const w = h2o2Canvas.width;
+            const h = h2o2Canvas.height;
+
+            // Flash effect
+            const flash = document.getElementById('explosion-flash');
+            flash.style.opacity = '0.75';
+            setTimeout(() => { flash.style.opacity = '0'; }, 350);
+
+            // Add Pt catalyst grains at bottom & convert H2/O2 into H2O rapidly
+            for (let i = 0; i < 8; i++) {
+                h2o2Particles.push({
+                    x: w * 0.25 + (i * w * 0.07),
+                    y: h - 18,
+                    vx: 0,
+                    vy: 0,
+                    type: 'Pt',
+                    r: 7
+                });
+            }
+
+            h2o2Particles.forEach(p => {
+                if (p.type === 'H2' || p.type === 'O2') {
+                    p.type = 'H2O';
+                    p.vx *= 2.8;
+                    p.vy *= 2.8;
+                    p.r = 8;
+                }
+            });
+
+            const statusBadge = document.getElementById('pt-exp-status');
+            const explainBox = document.getElementById('pt-exp-explain');
+            statusBadge.textContent = 'Đã thêm Pt • Phản ứng nổ tạo H₂O!';
+            statusBadge.className = 'px-2 py-0.5 text-[11px] rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold';
+            explainBox.innerHTML = '🔥 <strong>Giải thích (SGK Tr.19 & 21):</strong> Bột <strong>Pt là chất xúc tác</strong> hấp phụ H₂ và O₂ lên bề mặt, mở ra con đường phản ứng mới có <strong>năng lượng hoạt hóa thấp hơn hẳn</strong>, giúp phản ứng xảy ra tức khắc ngay ở nhiệt độ phòng!';
+        }
+
+        function animateH2O2() {
+            if (h2o2Ctx && currentSlide === 1) {
+                const w = h2o2Canvas.width;
+                const h = h2o2Canvas.height;
+                h2o2Ctx.clearRect(0, 0, w, h);
+
+                h2o2Particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < p.r || p.x > w - p.r) p.vx *= -1;
+                    if (p.y < p.r || p.y > h - p.r) p.vy *= -1;
+
+                    h2o2Ctx.beginPath();
+                    if (p.type === 'H2') {
+                        h2o2Ctx.fillStyle = '#22d3ee';
+                        h2o2Ctx.arc(p.x - 3, p.y, 5, 0, Math.PI * 2);
+                        h2o2Ctx.arc(p.x + 3, p.y, 5, 0, Math.PI * 2);
+                        h2o2Ctx.fill();
+                    } else if (p.type === 'O2') {
+                        h2o2Ctx.fillStyle = '#f43f5e';
+                        h2o2Ctx.arc(p.x - 4, p.y, 7, 0, Math.PI * 2);
+                        h2o2Ctx.arc(p.x + 4, p.y, 7, 0, Math.PI * 2);
+                        h2o2Ctx.fill();
+                    } else if (p.type === 'H2O') {
+                        // Draw H2O V-shape molecule
+                        h2o2Ctx.fillStyle = '#10b981';
+                        h2o2Ctx.arc(p.x, p.y, 7, 0, Math.PI * 2);
+                        h2o2Ctx.fill();
+                        h2o2Ctx.beginPath();
+                        h2o2Ctx.fillStyle = '#e2e8f0';
+                        h2o2Ctx.arc(p.x - 6, p.y + 5, 4, 0, Math.PI * 2);
+                        h2o2Ctx.arc(p.x + 6, p.y + 5, 4, 0, Math.PI * 2);
+                        h2o2Ctx.fill();
+                    } else if (p.type === 'Pt') {
+                        h2o2Ctx.fillStyle = '#fcd34d';
+                        h2o2Ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                        h2o2Ctx.fill();
+                    }
+                });
+            }
+            requestAnimationFrame(animateH2O2);
+        }
+
+        /* -----------------------------------------------------------
+           3. SLIDE 2: 2D MOLECULAR COLLISION SIMULATOR (FEATURE #2)
+        ----------------------------------------------------------- */
+        let colCanvas, colCtx;
+        let colEnergy = 85;
+        let colGoodOrientation = true;
+        let colState = 'idle'; // idle, approaching, collided
+        let molLeftX = 80, molRightX = 320;
+        let sepY = 0;
+
+        function initCollisionSim() {
+            colCanvas = document.getElementById('collision-sim-canvas');
+            if (!colCanvas) return;
+            colCtx = colCanvas.getContext('2d');
+            resizeCollisionCanvas();
+            animateCollisionSim();
+        }
+
+        function resizeCollisionCanvas() {
+            if (!colCanvas) return;
+            const rect = colCanvas.parentElement.getBoundingClientRect();
+            colCanvas.width = rect.width || 520;
+            colCanvas.height = rect.height || 240;
+            resetCollisionPositions();
+        }
+
+        function resetCollisionPositions() {
+            if (!colCanvas) return;
+            molLeftX = colCanvas.width * 0.2;
+            molRightX = colCanvas.width * 0.8;
+            sepY = 0;
+            colState = 'idle';
+        }
+
+        function updateCollisionParams() {
+            colEnergy = parseFloat(document.getElementById('col-energy-slider').value);
+            document.getElementById('col-energy-val').textContent = `${colEnergy} kJ/mol`;
+            resetCollisionPositions();
+        }
+
+        function setCollisionOrientation(isGood) {
+            colGoodOrientation = isGood;
+            const btnGood = document.getElementById('btn-orient-good');
+            const btnBad = document.getElementById('btn-orient-bad');
+            const orientVal = document.getElementById('col-orient-val');
+
+            if (isGood) {
+                btnGood.className = 'py-1.5 px-2 rounded-lg text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 transition';
+                btnBad.className = 'py-1.5 px-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700 transition';
+                orientVal.textContent = 'Đúng hướng (Song song)';
+                orientVal.className = 'font-bold text-emerald-400';
+            } else {
+                btnBad.className = 'py-1.5 px-2 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/50 transition';
+                btnGood.className = 'py-1.5 px-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700 transition';
+                orientVal.textContent = 'Lệch hướng (Vuông góc)';
+                orientVal.className = 'font-bold text-rose-400';
+            }
+            resetCollisionPositions();
+        }
+
+        function presetCollision(energy, orient) {
+            document.getElementById('col-energy-slider').value = energy;
+            updateCollisionParams();
+            setCollisionOrientation(orient);
+            launchCollision();
+        }
+
+        function launchCollision() {
+            resetCollisionPositions();
+            colState = 'approaching';
+            const badge = document.getElementById('collision-badge');
+            badge.textContent = 'Đang lao vào va chạm...';
+            badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
+        }
+
+        function animateCollisionSim() {
+            if (colCtx && currentSlide === 2) {
+                const w = colCanvas.width;
+                const h = colCanvas.height;
+                const cy = h / 2;
+                colCtx.clearRect(0, 0, w, h);
+
+                const speed = (colEnergy / 70) * 3.8;
+                const isEffective = (colEnergy >= 70 && colGoodOrientation);
+
+                if (colState === 'approaching') {
+                    molLeftX += speed;
+                    molRightX -= speed;
+                    if (molRightX - molLeftX <= 34) {
+                        colState = 'after';
+                        const badge = document.getElementById('collision-badge');
+                        if (isEffective) {
+                            badge.innerHTML = '✅ VA CHẠM HIỆU QUẢ! Đã tạo 2 phân tử sản phẩm AB';
+                            badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+                        } else if (colEnergy < 70) {
+                            badge.innerHTML = '❌ THẤT BẠI: Động năng (' + colEnergy + ') < Ea (70 kJ/mol)';
+                            badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40';
+                        } else {
+                            badge.innerHTML = '❌ THẤT BẠI: Đủ năng lượng nhưng SAI HƯỚNG va chạm!';
+                            badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40';
+                        }
+                    }
+                } else if (colState === 'after') {
+                    if (isEffective) {
+                        sepY = Math.min(sepY + 2.2, 42);
+                    } else {
+                        molLeftX = Math.max(w * 0.15, molLeftX - 3);
+                        molRightX = Math.min(w * 0.85, molRightX + 3);
+                    }
+                }
+
+                // Draw Molecules
+                if (colState === 'after' && isEffective) {
+                    // Product AB top and bottom
+                    drawDiatomic(colCtx, w/2 - 14, cy - sepY, w/2 + 14, cy - sepY, '#06b6d4', '#f43f5e', 'A', 'B');
+                    drawDiatomic(colCtx, w/2 - 14, cy + sepY, w/2 + 14, cy + sepY, '#06b6d4', '#f43f5e', 'A', 'B');
+                } else {
+                    // Reactant A2 (left)
+                    drawDiatomic(colCtx, molLeftX, cy - 15, molLeftX, cy + 15, '#06b6d4', '#06b6d4', 'A', 'A');
+                    // Reactant B2 (right - vertical if good orient, horizontal if bad)
+                    if (colGoodOrientation) {
+                        drawDiatomic(colCtx, molRightX, cy - 15, molRightX, cy + 15, '#f43f5e', '#f43f5e', 'B', 'B');
+                    } else {
+                        drawDiatomic(colCtx, molRightX - 15, cy - 18, molRightX + 15, cy - 18, '#f43f5e', '#f43f5e', 'B', 'B');
+                    }
+                }
+            }
+            requestAnimationFrame(animateCollisionSim);
+        }
+
+        function drawDiatomic(ctx, x1, y1, x2, y2, c1, c2, l1, l2) {
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            [{x: x1, y: y1, c: c1, l: l1}, {x: x2, y: y2, c: c2, l: l2}].forEach(atom => {
+                ctx.beginPath();
+                ctx.fillStyle = atom.c;
+                ctx.arc(atom.x, atom.y, 14, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#050814';
+                ctx.font = 'bold 11px Inter';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(atom.l, atom.x, atom.y);
+            });
+        }
+
+        /* -----------------------------------------------------------
+           4. SLIDE 3: INTERACTIVE ENERGY PROFILE CHART (FEATURE #3)
+        ----------------------------------------------------------- */
+        let reactionType = 'exo'; // 'exo' or 'endo'
+
+        function setReactionThermodynamics(type) {
+            reactionType = type;
+            const btnExo = document.getElementById('btn-exo');
+            const btnEndo = document.getElementById('btn-endo');
+            const tag = document.getElementById('profile-formula-tag');
+
+            if (type === 'exo') {
+                btnExo.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 transition';
+                btnEndo.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700 transition';
+                tag.textContent = 'ΔrH = -40 kJ/mol (Tỏa nhiệt)';
+                tag.className = 'text-xs font-mono text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded border border-emerald-500/30';
+            } else {
+                btnEndo.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/50 transition';
+                btnExo.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-400 border border-slate-700 transition';
+                tag.textContent = 'ΔrH = +35 kJ/mol (Thu nhiệt)';
+                tag.className = 'text-xs font-mono text-rose-400 bg-rose-950/60 px-2.5 py-0.5 rounded border border-rose-500/30';
+            }
+            drawEnergyProfile();
+        }
+
+        function drawEnergyProfile() {
+            const canvas = document.getElementById('energy-profile-canvas');
+            if (!canvas) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width || 560;
+            canvas.height = rect.height || 270;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            const eaVal = parseFloat(document.getElementById('profile-ea-slider').value);
+            document.getElementById('ea-slider-label').textContent = `Ea = ${eaVal} kJ/mol`;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Axes
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, 20);
+            ctx.lineTo(50, h - 35);
+            ctx.lineTo(w - 25, h - 35);
+            ctx.stroke();
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText('Năng lượng (E)', 58, 30);
+            ctx.fillText('Tiến trình phản ứng →', w - 165, h - 14);
+
+            // Coordinates
+            const reactY = reactionType === 'exo' ? h - 105 : h - 75;
+            const prodY = reactionType === 'exo' ? h - 55 : h - 125;
+            const peakY = Math.max(32, reactY - (eaVal * 1.15));
+            const peakX = w * 0.48;
+
+            // Reactant & Product platforms
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(65, reactY);
+            ctx.lineTo(155, reactY);
+            // Smooth curve over peak to product
+            ctx.bezierCurveTo(220, reactY, peakX - 45, peakY, peakX, peakY);
+            ctx.bezierCurveTo(peakX + 45, peakY, w - 210, prodY, w - 135, prodY);
+            ctx.lineTo(w - 45, prodY);
+            ctx.stroke();
+
+            // Dashed reference lines
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(155, reactY);
+            ctx.lineTo(w - 60, reactY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Ea vertical arrow
+            ctx.strokeStyle = '#fbbf24';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(peakX, reactY);
+            ctx.lineTo(peakX, peakY + 4);
+            ctx.stroke();
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 12px JetBrains Mono';
+            ctx.fillText(`Ea = ${eaVal} kJ/mol`, peakX + 10, (reactY + peakY) / 2);
+
+            // Labels
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText('Chất phản ứng', 68, reactY - 10);
+            ctx.fillText('Sản phẩm', w - 125, prodY - 10);
+            ctx.fillStyle = '#c084fc';
+            ctx.fillText('Phức chất hoạt động [A···B]‡', peakX - 75, peakY - 10);
+        }
+
+        /* -----------------------------------------------------------
+           5. SLIDE 5: ARRHENIUS SCIENTIFIC LIVE CALCULATOR (FEATURE #4)
+        ----------------------------------------------------------- */
+        let currentCalcMode = 'find_k2';
+        const R_CONST = 8.314;
+
+        function switchCalcMode(mode) {
+            currentCalcMode = mode;
+            const tabK2 = document.getElementById('tab-calc-k2');
+            const tabEa = document.getElementById('tab-calc-ea');
+            const fieldsK2 = document.getElementById('calc-fields-k2');
+            const fieldsEa = document.getElementById('calc-fields-ea');
+            const badge = document.getElementById('calc-mode-badge');
+
+            if (mode === 'find_k2') {
+                tabK2.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition';
+                tabEa.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+                fieldsK2.classList.remove('hidden');
+                fieldsEa.classList.add('hidden');
+                badge.textContent = 'Tìm hằng số tốc độ k₂';
+            } else {
+                tabEa.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition';
+                tabK2.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+                fieldsEa.classList.remove('hidden');
+                fieldsK2.classList.add('hidden');
+                badge.textContent = 'Tìm năng lượng hoạt hóa Ea';
+            }
+            runArrheniusCalculator();
+        }
+
+        function loadSGKPreset(num) {
+            if (num === 1) {
+                switchCalcMode('find_k2');
+                document.getElementById('calc-t1').value = 350;
+                document.getElementById('calc-t2').value = 400;
+                document.getElementById('calc-ea').value = 100;
+                document.getElementById('calc-k1').value = 0.000008;
+            } else if (num === 2) {
+                switchCalcMode('find_ea');
+                document.getElementById('calc-t1').value = 300;
+                document.getElementById('calc-t2').value = 310;
+                document.getElementById('calc-ratio').value = 3;
+            } else if (num === 3) {
+                switchCalcMode('find_k2');
+                document.getElementById('calc-t1').value = 318; // 45 + 273
+                document.getElementById('calc-t2').value = 338; // 65 + 273
+                document.getElementById('calc-ea').value = 103.5;
+                document.getElementById('calc-k1').value = 0.00817;
+            }
+            runArrheniusCalculator();
+        }
+
+        function runArrheniusCalculator() {
+            const t1 = parseFloat(document.getElementById('calc-t1').value) || 300;
+            const t2 = parseFloat(document.getElementById('calc-t2').value) || 310;
+            const stepsBox = document.getElementById('calc-output-steps');
+            const finalRes = document.getElementById('calc-final-result');
+
+            if (currentCalcMode === 'find_k2') {
+                const eaKj = parseFloat(document.getElementById('calc-ea').value) || 100;
+                const eaJ = eaKj * 1000;
+                const k1 = parseFloat(document.getElementById('calc-k1').value) || 1;
+
+                const invDiff = (1 / t1) - (1 / t2);
+                const lnRatio = (eaJ / R_CONST) * invDiff;
+                const ratio = Math.exp(lnRatio);
+                const k2 = k1 * ratio;
+
+                stepsBox.innerHTML = `
+                    <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                        <span class="text-cyan-400 font-bold">Bước 1 (Đổi đơn vị chuẩn):</span><br>
+                        • $E_a = ${eaKj}\\text{ kJ/mol} = ${eaJ.toLocaleString()}\\text{ J/mol}$<br>
+                        • $T_1 = ${t1}\\text{ K}; \\quad T_2 = ${t2}\\text{ K}$
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                        <span class="text-violet-400 font-bold">Bước 2 (Tính vế phải phương trình Arrhenius):</span><br>
+                        • $\\ln(k_2 / k_1) = \\frac{${eaJ}}{8.314} \\times \\left(\\frac{1}{${t1}} - \\frac{1}{${t2}}\\right) = ${lnRatio.toFixed(4)}$
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                        <span class="text-emerald-400 font-bold">Bước 3 (Lấy hàm mũ $e^x$ tìm tỉ số tốc độ):</span><br>
+                        • $\\frac{k_2}{k_1} = e^{${lnRatio.toFixed(4)}} \\approx ${ratio.toFixed(3)}\\text{ lần}$<br>
+                        • $k_2 = ${k1.toExponential(2)} \\times ${ratio.toFixed(3)} = ${k2.toExponential(3)}$
+                    </div>
+                `;
+                finalRes.textContent = `k₂ = ${k2.toExponential(3)} (Tăng ${ratio.toFixed(2)} lần)`;
+            } else {
+                const ratio = parseFloat(document.getElementById('calc-ratio').value) || 3;
+                const lnRatio = Math.log(ratio);
+                const invDiff = (1 / t1) - (1 / t2);
+                const eaJ = (lnRatio * R_CONST) / invDiff;
+                const eaKj = eaJ / 1000;
+
+                stepsBox.innerHTML = `
+                    <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                        <span class="text-cyan-400 font-bold">Bước 1 (Lấy Logarit tự nhiên tỉ số tốc độ):</span><br>
+                        • $\\frac{k_2}{k_1} = ${ratio} \\Rightarrow \\ln\\left(\\frac{k_2}{k_1}\\right) = \\ln(${ratio}) \\approx ${lnRatio.toFixed(4)}$
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                        <span class="text-violet-400 font-bold">Bước 2 (Tính hiệu nghịch đảo nhiệt độ):</span><br>
+                        • $\\left(\\frac{1}{T_1} - \\frac{1}{T_2}\\right) = \\frac{1}{${t1}} - \\frac{1}{${t2}} = ${invDiff.toExponential(4)}\\text{ K}^{-1}$
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                        <span class="text-emerald-400 font-bold">Bước 3 (Rút ra $E_a$):</span><br>
+                        • $E_a = \\frac{${lnRatio.toFixed(4)} \\times 8.314}{${invDiff.toExponential(4)}} \\approx ${Math.round(eaJ).toLocaleString()}\\text{ J/mol}$
+                    </div>
+                `;
+                finalRes.textContent = `Ea = ${eaKj.toFixed(2)} kJ/mol (${Math.round(eaJ).toLocaleString()} J/mol)`;
+            }
+
+            if (window.renderMathInElement) {
+                renderMathInElement(stepsBox, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+        }
+
+        /* -----------------------------------------------------------
+           6. SLIDE 7: CATALYST MULTI-PEAK ENERGY PROFILE (FEATURE #3)
+        ----------------------------------------------------------- */
+        let showCatalystCurve = true;
+
+        function toggleCatalystCurve() {
+            showCatalystCurve = !showCatalystCurve;
+            const btn = document.getElementById('btn-toggle-cat');
+            const icon = document.getElementById('cat-toggle-icon');
+            const text = document.getElementById('cat-toggle-text');
+
+            if (showCatalystCurve) {
+                btn.className = 'px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition flex items-center gap-2';
+                icon.className = 'fa-solid fa-toggle-on';
+                text.textContent = 'Đang bật đường cong Có Xúc Tác';
+            } else {
+                btn.className = 'px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs sm:text-sm border border-slate-700 transition flex items-center gap-2';
+                icon.className = 'fa-solid fa-toggle-off';
+                text.textContent = 'Đã tắt đường cong Có Xúc Tác';
+            }
+            drawCatalystChart();
+        }
+
+        function drawCatalystChart() {
+            const canvas = document.getElementById('catalyst-chart-canvas');
+            if (!canvas) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width || 560;
+            canvas.height = rect.height || 270;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Axes
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(45, 20);
+            ctx.lineTo(45, h - 30);
+            ctx.lineTo(w - 20, h - 30);
+            ctx.stroke();
+
+            const reactY = h - 95;
+            const prodY = h - 48;
+
+            // 1. Uncatalyzed high barrier curve (Red)
+            ctx.strokeStyle = '#f43f5e';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(55, reactY);
+            ctx.lineTo(130, reactY);
+            ctx.bezierCurveTo(200, reactY, w * 0.45 - 40, 32, w * 0.48, 32);
+            ctx.bezierCurveTo(w * 0.48 + 40, 32, w - 180, prodY, w - 120, prodY);
+            ctx.lineTo(w - 35, prodY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#fb7185';
+            ctx.font = 'bold 12px Inter';
+            ctx.fillText('Không có xúc tác (Ea cao)', w * 0.36, 24);
+
+            // 2. Catalyzed 2-step lower barrier curve (Emerald Green)
+            if (showCatalystCurve) {
+                ctx.strokeStyle = '#10b981';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(130, reactY);
+                ctx.bezierCurveTo(175, reactY, w * 0.32 - 20, 110, w * 0.35, 110);
+                ctx.bezierCurveTo(w * 0.38, 110, w * 0.46, 155, w * 0.49, 155);
+                ctx.bezierCurveTo(w * 0.52, 155, w * 0.60, 118, w * 0.63, 118);
+                ctx.bezierCurveTo(w * 0.67, 118, w - 175, prodY, w - 120, prodY);
+                ctx.stroke();
+
+                ctx.fillStyle = '#34d399';
+                ctx.font = 'bold 12px Inter';
+                ctx.fillText("Có xúc tác (Ea' thấp hơn nhiều)", w * 0.35, 98);
+            }
+
+            // Labels
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillText('Chất đầu', 60, reactY - 8);
+            ctx.fillText('Sản phẩm', w - 105, prodY - 8);
+        }
+
+        /* -----------------------------------------------------------
+           7. SLIDE 8: OZONE DEPLETION STEP-BY-STEP ANIMATOR (FEATURE #5)
+        ----------------------------------------------------------- */
+        let ozoneStep = 0;
+
+        function stepOzoneCycle() {
+            ozoneStep = (ozoneStep + 1) % 3;
+            updateOzoneUI();
+        }
+
+        function resetOzoneCycle() {
+            ozoneStep = 0;
+            updateOzoneUI();
+        }
+
+        function updateOzoneUI() {
+            const s1 = document.getElementById('ozone-step-1');
+            const s2 = document.getElementById('ozone-step-2');
+            const sum = document.getElementById('ozone-step-sum');
+            const ind = document.getElementById('ozone-step-indicator');
+
+            s1.className = 'p-3 rounded-lg bg-slate-900/90 border border-slate-800 transition-all';
+            s2.className = 'p-3 rounded-lg bg-slate-900/90 border border-slate-800 transition-all';
+            sum.className = 'p-3 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-center transition-all';
+
+            if (ozoneStep === 1) {
+                s1.className = 'p-3 rounded-lg bg-amber-500/20 border-2 border-amber-400 scale-[1.02] transition-all';
+                ind.textContent = 'Đang chạy Giai đoạn (1): Cl phá hủy phân tử O₃ thứ nhất';
+            } else if (ozoneStep === 2) {
+                s2.className = 'p-3 rounded-lg bg-emerald-500/20 border-2 border-emerald-400 scale-[1.02] transition-all';
+                sum.className = 'p-3 rounded-lg bg-cyan-500/25 border-2 border-cyan-400 text-center transition-all';
+                ind.textContent = 'Giai đoạn (2): ClO tác dụng O₃ và tái tạo gốc Cl tự do!';
+            } else {
+                ind.textContent = 'Bước 0 / 2 (Sẵn sàng)';
+            }
+        }
+
+        /* -----------------------------------------------------------
+           8. SLIDE 10: INTERACTIVE 5-QUESTION QUIZ ENGINE
+        ----------------------------------------------------------- */
+        const quizData = [
+            {
+                q: "Câu 1 (SGK Tr.19): Năng lượng hoạt hóa (Ea) của phản ứng hóa học là gì?",
+                options: [
+                    "A. Năng lượng tỏa ra hay thu vào của toàn bộ phản ứng hóa học.",
+                    "B. Năng lượng tối thiểu mà các phân tử chất phản ứng cần có để va chạm giữa chúng dẫn đến phản ứng hóa học.",
+                    "C. Động năng trung bình của các phân tử sản phẩm sau phản ứng.",
+                    "D. Nhiệt lượng cần cung cấp để đun sôi dung dịch phản ứng."
+                ],
+                correct: 1,
+                explain: "Theo định nghĩa trang 19 SGK: Năng lượng hoạt hóa (Ea) là năng lượng tối thiểu mà các phân tử chất phản ứng cần phải có để tạo ra va chạm hiệu quả dẫn đến phản ứng."
+            },
+            {
+                q: "Câu 2 (SGK Tr.19): Ở cùng một điều kiện nhiệt độ, nếu năng lượng hoạt hóa (Ea) của phản ứng càng lớn thì tốc độ phản ứng sẽ như thế nào?",
+                options: [
+                    "A. Tốc độ phản ứng càng nhanh.",
+                    "B. Tốc độ phản ứng càng nhỏ (chậm).",
+                    "C. Tốc độ phản ứng không bị ảnh hưởng bởi Ea.",
+                    "D. Biến thiên enthalpy ΔrH càng âm."
+                ],
+                correct: 1,
+                explain: "Hàng rào năng lượng hoạt hóa Ea càng lớn thì số phân tử có đủ năng lượng vượt qua rào cản càng ít, số va chạm hiệu quả giảm nên tốc độ phản ứng càng chậm."
+            },
+            {
+                q: "Câu 3 (SGK Tr.21): Nhận định nào sau đây là ĐÚNG khi nói về vai trò của chất xúc tác?",
+                options: [
+                    "A. Chất xúc tác làm tăng biến thiên enthalpy (ΔrH) để phản ứng tỏa nhiều nhiệt hơn.",
+                    "B. Chất xúc tác cung cấp thêm động năng cho các phân tử chất phản ứng.",
+                    "C. Chất xúc tác làm giảm năng lượng hoạt hóa (Ea' < Ea) bằng cách tạo con đường phản ứng mới nhưng giữ nguyên ΔrH.",
+                    "D. Chất xúc tác bị tiêu hao hoàn toàn để chuyển thành sản phẩm."
+                ],
+                correct: 2,
+                explain: "Trang 21 SGK khẳng định: Chất xúc tác mở ra các giai đoạn trung gian có Ea' thấp hơn nhiều so với Ea ban đầu, được hoàn nguyên sau phản ứng và không làm thay đổi ΔrH."
+            },
+            {
+                q: "Câu 4 (SGK Tr.22): Trong cơ chế phân hủy tầng Ozone gồm 2 giai đoạn: (1) Cl + O₃ → ClO + O₂ và (2) ClO + O₃ → Cl + 2O₂. Vai trò của Cl và ClO lần lượt là:",
+                options: [
+                    "A. Cl là sản phẩm chính; ClO là chất xúc tác.",
+                    "B. Cl là chất xúc tác; ClO là chất trung gian phản ứng.",
+                    "C. Cả Cl và ClO đều là chất xúc tác.",
+                    "D. Cl là chất phản ứng bị mất đi; ClO là sản phẩm cuối."
+                ],
+                correct: 1,
+                explain: "Cl tham gia ở giai đoạn (1) và được tái tạo nguyên vẹn ở giai đoạn (2) nên Cl là chất xúc tác. ClO sinh ra ở (1) rồi mất đi ở (2) nên là chất trung gian."
+            },
+            {
+                q: "Câu 5 (SGK Tr.20): Theo bài tập 2 trang 20, khi tăng nhiệt độ từ 300 K lên 310 K thì tốc độ phản ứng tăng gấp 3 lần. Giá trị năng lượng hoạt hóa Ea của phản ứng gần nhất với giá trị nào?",
+                options: [
+                    "A. 84,95 kJ/mol",
+                    "B. 12,45 kJ/mol",
+                    "C. 103,50 kJ/mol",
+                    "D. 55,40 kJ/mol"
+                ],
+                correct: 0,
+                explain: "Áp dụng ln(3) = (Ea / 8,314) × (1/300 - 1/310) ⇒ Ea ≈ 84 946 J/mol ≈ 84,95 kJ/mol."
+            }
+        ];
+
+        let userAnswers = {};
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let score = 0;
+            Object.keys(userAnswers).forEach(qIdx => {
+                if (userAnswers[qIdx] === quizData[qIdx].correct) score++;
+            });
+            document.getElementById('quiz-score').textContent = `${score} / ${quizData.length}`;
+
+            quizData.forEach((item, idx) => {
+                const answered = userAnswers[idx] !== undefined;
+                const card = document.createElement('div');
+                card.className = 'p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3';
+
+                let optsHTML = '';
+                item.options.forEach((opt, oIdx) => {
+                    let btnClass = 'bg-slate-950 hover:bg-slate-800 border-slate-800 text-slate-300';
+                    if (answered) {
+                        if (oIdx === item.correct) {
+                            btnClass = 'bg-emerald-950/90 border-emerald-500 text-emerald-300 font-bold';
+                        } else if (oIdx === userAnswers[idx]) {
+                            btnClass = 'bg-rose-950/90 border-rose-500 text-rose-300';
+                        }
+                    }
+                    optsHTML += `
+                        <button onclick="selectQuizOption(${idx}, ${oIdx})" ${answered ? 'disabled' : ''} class="w-full text-left p-3 rounded-xl border text-xs sm:text-sm transition ${btnClass}">
+                            ${opt}
+                        </button>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="font-bold text-sm sm:text-base text-white">${item.q}</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${optsHTML}</div>
+                    ${answered ? `<div class="p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs text-cyan-200">💡 <strong>Giải thích:</strong> ${item.explain}</div>` : ''}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectQuizOption(qIdx, oIdx) {
+            userAnswers[qIdx] = oIdx;
+            renderQuiz();
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            renderQuiz();
+        }
+
+        /* -----------------------------------------------------------
+           9. PRESENTATION TOOLS: LASER POINTER & LIVE DRAW (FEATURE #6)
+        ----------------------------------------------------------- */
+        let laserActive = false;
+        let drawModeActive = false;
+        let isDrawing = false;
+        let annotCanvas, annotCtx;
+
+        function initAnnotationTools() {
+            annotCanvas = document.getElementById('annotation-canvas');
+            annotCtx = annotCanvas.getContext('2d');
+            resizeAnnotationCanvas();
+            window.addEventListener('resize', resizeAnnotationCanvas);
+
+            const laserDot = document.getElementById('laser-dot');
+
+            window.addEventListener('mousemove', (e) => {
+                if (laserActive) {
+                    laserDot.style.left = `${e.clientX}px`;
+                    laserDot.style.top = `${e.clientY}px`;
+                }
+                if (drawModeActive && isDrawing) {
+                    annotCtx.lineTo(e.clientX, e.clientY);
+                    annotCtx.stroke();
+                }
+            });
+
+            annotCanvas.addEventListener('mousedown', (e) => {
+                if (!drawModeActive) return;
+                isDrawing = true;
+                annotCtx.strokeStyle = '#fbbf24';
+                annotCtx.lineWidth = 3.5;
+                annotCtx.lineCap = 'round';
+                annotCtx.beginPath();
+                annotCtx.moveTo(e.clientX, e.clientY);
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDrawing = false;
+            });
+        }
+
+        function resizeAnnotationCanvas() {
+            if (!annotCanvas) return;
+            annotCanvas.width = window.innerWidth;
+            annotCanvas.height = window.innerHeight;
+        }
+
+        function toggleLaser() {
+            laserActive = !laserActive;
+            const dot = document.getElementById('laser-dot');
+            const btn = document.getElementById('btn-laser');
+            dot.style.display = laserActive ? 'block' : 'none';
+            btn.className = laserActive
+                ? 'p-2 rounded-lg bg-rose-500 text-slate-950 font-bold transition text-xs sm:text-sm flex items-center gap-1.5'
+                : 'p-2 rounded-lg bg-slate-800/80 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 border border-slate-700 transition text-xs sm:text-sm flex items-center gap-1.5';
+        }
+
+        function toggleDrawMode() {
+            drawModeActive = !drawModeActive;
+            const btn = document.getElementById('btn-draw');
+            const clearBtn = document.getElementById('btn-clear-draw');
+            annotCanvas.style.pointerEvents = drawModeActive ? 'auto' : 'none';
+            annotCanvas.style.cursor = drawModeActive ? 'crosshair' : 'default';
+
+            if (drawModeActive) {
+                btn.className = 'p-2 rounded-lg bg-amber-400 text-slate-950 font-bold transition text-xs sm:text-sm flex items-center gap-1.5';
+                clearBtn.classList.remove('hidden');
+            } else {
+                btn.className = 'p-2 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 border border-slate-700 transition text-xs sm:text-sm flex items-center gap-1.5';
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        function clearAnnotations() {
+            if (annotCtx) annotCtx.clearRect(0, 0, annotCanvas.width, annotCanvas.height);
+        }
+
+        /* -----------------------------------------------------------
+           10. AMBIENT BACKGROUND PARTICLES & KEYBOARD SHORTCUTS
+        ----------------------------------------------------------- */
+        function initAmbientBackground() {
+            const canvas = document.getElementById('bg-particles');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const stars = Array.from({length: 45}, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                r: Math.random() * 1.8 + 0.5,
+                vx: (Math.random() - 0.5) * 0.35,
+                vy: (Math.random() - 0.5) * 0.35
+            }));
+
+            function drawStars() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#38bdf8';
+                stars.forEach(s => {
+                    s.x = (s.x + s.vx + canvas.width) % canvas.width;
+                    s.y = (s.y + s.vy + canvas.height) % canvas.height;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                requestAnimationFrame(drawStars);
+            }
+            drawStars();
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight') nextSlide();
+            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key.toLowerCase() === 'l') toggleLaser();
+            if (e.key.toLowerCase() === 'd') toggleDrawMode();
+            if (e.key.toLowerCase() === 's') toggleSpeakerNotes();
+            if (e.key.toLowerCase() === 'm') toggleTOC();
+            if (e.key.toLowerCase() === 'f') toggleFullScreen();
+            if (e.key === '?') toggleShortcutsModal();
+        });
+
+        /* -----------------------------------------------------------
+           INITIALIZE EVERYTHING ON WINDOW LOAD
+        ----------------------------------------------------------- */
+        window.onload = function () {
+            initNavigation();
+            initH2O2Experiment();
+            initCollisionSim();
+            drawEnergyProfile();
+            runArrheniusCalculator();
+            drawCatalystChart();
+            renderQuiz();
+            initAnnotationTools();
+            initAmbientBackground();
+
+            // Render KaTeX Math Formulas
+            if (window.renderMathInElement) {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+        };
+    </script>
+</body>
+</html>
